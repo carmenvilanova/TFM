@@ -163,7 +163,7 @@ pip install transformers accelerate datasets peft trl bitsandbytes
 !pip install pdfplumber
 import pdfplumber
 
-pdf_folder = "documentos_convocatoria" # Asegúrate de que esta carpeta exista y contenga tus PDFs
+pdf_folder = "/outputs/documentos_convocatoria" # Asegúrate de que esta carpeta exista y contenga tus PDFs
 output_txt_file = "TextoConvocatoria.txt" # El archivo de texto unificado
 
 all_text = []
