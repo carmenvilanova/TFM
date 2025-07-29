@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { Building2 } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { PhaseSelector } from './PhaseSelector';
@@ -11,6 +12,7 @@ interface ChatContainerProps {
   onSendMessage: (message: string) => void;
   onPhaseChange: (phase: 'search' | 'document') => void;
   onGrantSelect: (grant: GrantCall) => void;
+  onFileUpload?: (file: File) => void;
 }
 
 // Mock grant data for demonstration
