@@ -118,6 +118,28 @@ export const useChat = () => {
     setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
   }, [currentSession]);
 
+  const handleFileUpload = useCallback((file: File) => {
+    if (!currentSession) return;
+
+    const systemMessage: Message = {
+      id: Date.now().toString(),
+      type: 'system',
+      content: `Archivo "${file.name}" subido correctamente. Ahora puedes hacer preguntas sobre el contenido de este documento.`,
+      timestamp: new Date(),
+    };
+
+    const updatedSession = {
+      ...currentSession,
+      messages: [...currentSession.messages, systemMessage],
+    };
+
+    setCurrentSession(updatedSession);
+    setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
+
+    // Aquí puedes enviar el archivo a tu backend para procesamiento
+    console.log('Archivo subido:', file);
+  }, [currentSession]);
+
   return {
     sessions,
     currentSession,
@@ -128,5 +150,6 @@ export const useChat = () => {
     sendMessage,
     changePhase,
     selectGrant,
+    handleFileUpload,
   };
 };
