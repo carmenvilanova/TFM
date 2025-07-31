@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
 import { Message, ChatSession, GrantCall } from '../types/chat';
 
+const API_URL = 'https://tfm-ecjg.onrender.com'
+
+
 export const useChat = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSession, setCurrentSession] = useState<ChatSession | null>(null);
@@ -59,29 +62,37 @@ export const useChat = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call to your chatbot backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: currentSession.phase === 'search' 
-          ? `He encontrado varias ayudas relacionadas con "${content}". Aquí tienes algunas opciones relevantes:\n\n• Programa de Ayudas para Vivienda Social - Hasta 500.000€\n• Iniciativa de Vivienda Comunitaria - Hasta 250.000€\n• Programa de Vivienda Asequible - Hasta 1.000.000€\n\n¿Te gustaría que te proporcione más detalles sobre alguna de estas ayudas?`
-          : `Basándome en el documento de la ayuda, aquí están los detalles clave sobre "${content}":\n\n• Los requisitos de elegibilidad incluyen...\n• Las fechas límite de solicitud son...\n• La documentación requerida incluye...\n\n¿Te gustaría que aclare algún aspecto específico?`,
-        timestamp: new Date(),
-        phase: currentSession.phase,
-      };
+  const response = await fetch(`${API_URL}/api/hello`, {
+    method: 'GET', // o POST si tienes otra ruta para mensajes
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    // Si tu backend espera datos en POST, cambia a POST y agrega body:
+    // body: JSON.stringify({ content, phase: currentSession.phase }),
+  });
 
-      const finalSession = {
-        ...updatedSession,
-        messages: [...updatedSession.messages, assistantMessage],
-      };
+  const data = await response.json();
 
-      setCurrentSession(finalSession);
-      setSessions(prev => prev.map(s => s.id === finalSession.id ? finalSession : s));
-    } catch (error) {
-      console.error('Error sending message:', error);
-    } finally {
+  const assistantMessage: Message = {
+    id: (Date.now() + 1).toString(),
+    type: 'assistant',
+    content: data.message || 'Respuesta del backend',
+    timestamp: new Date(),
+    phase: currentSession.phase,
+  };
+
+  const finalSession = {
+    ...updatedSession,
+    messages: [...updatedSession.messages, assistantMessage],
+  };
+
+  setCurrentSession(finalSession);
+  setSessions(prev => prev.map(s => s.id === finalSession.id ? finalSession : s));
+} catch (error) {
+  console.error('Error sending message:', error);
+}
+
+     finally {
       setIsLoading(false);
     }
   }, [currentSession]);
