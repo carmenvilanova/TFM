@@ -18,14 +18,41 @@ app.get('/api/hello', (req, res) => {
 });
 
 // Ruta POST de procesamiento
+const { spawn } = require('child_process');
+
 app.post('/api/message', (req, res) => {
   const { content, phase } = req.body;
 
-  const response = phase === 'search'
-    ? `Respuesta simulada de búsqueda para: "${content}"`
-    : `Respuesta simulada para análisis de documento: "${content}"`;
+  if (phase === 'search') {
+    const python = spawn('python3', ['test_parser.py', content]);
 
-  res.json({ reply: response });
+    let data = '';
+    python.stdout.on('data', (chunk) => {
+      data += chunk.toString();
+    });
+
+    python.stderr.on('data', (error) => {
+      console.error(`Error: ${error}`);
+    });
+
+    python.on('close', (code) => {
+      if (code !== 0) {
+        return res.status(500).json({ error: "Error ejecutando Python" });
+      }
+
+      try {
+        const parsed = JSON.parse(data);
+        res.json({ reply: parsed });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error parseando respuesta Python" });
+      }
+    });
+  } else {
+    // Puedes mantener la lógica de análisis u otra fase
+    const response = `Respuesta simulada para análisis de documento: "${content}"`;
+    res.json({ reply: response });
+  }
 });
 
 // Inicio del servidor
