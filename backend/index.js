@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const { spawn } = require('child_process');
+const path = require('path');
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -7,7 +10,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Ruta raíz para evitar "Cannot GET /"
+// Ruta raíz
 app.get('/', (req, res) => {
   res.send('Backend is running. Try /api/hello');
 });
@@ -17,14 +20,16 @@ app.get('/api/hello', (req, res) => {
   res.json({ message: "Hola desde backend" });
 });
 
-// Ruta POST de procesamiento
-const { spawn } = require('child_process');
-
+// Ruta POST para procesamiento
 app.post('/api/message', (req, res) => {
   const { content, phase } = req.body;
 
   if (phase === 'search') {
-    const python = spawn('python3', ['test_parser.py', content]);
+    const scriptPath = path.join(__dirname, 'archivos_py', 'test_parser.py'); // asegúrate que la ruta es correcta
+
+    const python = spawn('python', [scriptPath, content], {
+      cwd: path.join(__dirname, 'archivos_py'), // setea cwd por si hay import relativos
+    });
 
     let data = '';
     python.stdout.on('data', (chunk) => {
@@ -44,12 +49,12 @@ app.post('/api/message', (req, res) => {
         const parsed = JSON.parse(data);
         res.json({ reply: parsed });
       } catch (err) {
-        console.error(err);
+        console.error("Error parseando JSON:", err);
+        console.error("Salida Python:", data);
         res.status(500).json({ error: "Error parseando respuesta Python" });
       }
     });
   } else {
-    // Puedes mantener la lógica de análisis u otra fase
     const response = `Respuesta simulada para análisis de documento: "${content}"`;
     res.json({ reply: response });
   }
