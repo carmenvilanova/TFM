@@ -61,15 +61,15 @@ export const useChat = () => {
     setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
     setIsLoading(true);
 
+    
     try {
-  const response = await fetch(`${API_URL}/api/hello`, {
-    method: 'GET', // o POST si tienes otra ruta para mensajes
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    // Si tu backend espera datos en POST, cambia a POST y agrega body:
-    // body: JSON.stringify({ content, phase: currentSession.phase }),
-  });
+          const response = await fetch(`${API_URL}/api/message`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content, phase: currentSession.phase }),
+          });
 
   const data = await response.json();
 
