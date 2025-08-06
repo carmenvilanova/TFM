@@ -16,9 +16,9 @@ app.get('/', (req, res) => {
 });
 
 // Ruta GET de prueba
-app.get('/api/hello', (req, res) => {
-  res.json({ message: "Hola desde backend" });
-});
+// app.get('/api/hello', (req, res) => {
+//  res.json({ message: "Hola desde backend" });
+// });
 
 // Ruta POST para procesamiento
 app.post('/api/message', (req, res) => {
