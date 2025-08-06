@@ -27,7 +27,7 @@ app.post('/api/message', (req, res) => {
   if (phase === 'search') {
     const scriptPath = path.join(__dirname, 'archivos_py', 'test_parser.py'); // asegúrate que la ruta es correcta
 
-    const python = spawn('python', [scriptPath, content], {
+    const python = spawn('python3', [scriptPath, content], {
       cwd: path.join(__dirname, 'archivos_py'), // setea cwd por si hay import relativos
     });
 
