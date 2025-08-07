@@ -1,0 +1,15 @@
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+    restart: always
+
+  frontend:
+    build: ./web/project
+    ports:
+      - "80:80"
+    restart: always
