@@ -17,32 +17,42 @@ app.get('/', (req, res) => {
 
 // Ruta GET de prueba
 // app.get('/api/hello', (req, res) => {
-//  res.json({ message: "Hola desde backend" });
+//   res.json({ message: "Hola desde backend" });
 // });
 
 // Ruta POST para procesamiento
 app.post('/api/message', (req, res) => {
   const { content, phase } = req.body;
+  console.log("POST /api/message recibido:", req.body);
 
   if (phase === 'search') {
     const scriptPath = path.join(__dirname, 'archivos_py', 'test_parser.py'); // asegúrate que la ruta es correcta
+
+    console.log("Ejecutando script Python:", scriptPath, content);
 
     const python = spawn('python3', [scriptPath, content], {
       cwd: path.join(__dirname, 'archivos_py'), // setea cwd por si hay import relativos
     });
 
     let data = '';
+    let errorData = '';
+
     python.stdout.on('data', (chunk) => {
       data += chunk.toString();
     });
 
     python.stderr.on('data', (error) => {
-      console.error(`Error: ${error}`);
+      errorData += error.toString();
+      console.error(`Error (stderr): ${error}`);
     });
 
     python.on('close', (code) => {
+      console.log("Script Python finalizado con código:", code);
+      if (errorData) {
+        console.error("Salida de error de Python:", errorData);
+      }
       if (code !== 0) {
-        return res.status(500).json({ error: "Error ejecutando Python" });
+        return res.status(500).json({ error: "Error ejecutando Python", details: errorData });
       }
 
       try {
@@ -51,7 +61,7 @@ app.post('/api/message', (req, res) => {
       } catch (err) {
         console.error("Error parseando JSON:", err);
         console.error("Salida Python:", data);
-        res.status(500).json({ error: "Error parseando respuesta Python" });
+        res.status(500).json({ error: "Error parseando respuesta Python", details: data });
       }
     });
   } else {

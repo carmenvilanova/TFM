@@ -13,13 +13,16 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Copiar el resto de archivos
-COPY . .
+# 👉 Copiar SOLO requirements.txt primero para aprovechar caché
+COPY ./archivos_py/requirements.txt ./archivos_py/requirements.txt
 
-# Instalar requerimientos de Python
+# 👉 Instalar paquetes Python y aprovechar caché si no ha cambiado
 RUN pip3 install --break-system-packages -r ./archivos_py/requirements.txt
 
-# Exponer el puerto del backend
+# Copiar el resto de archivos del proyecto (después de instalar paquetes)
+COPY . .
+
+# Exponer puerto
 EXPOSE 4000
 
 # Comando por defecto

@@ -1,7 +1,10 @@
 import { useState, useCallback } from 'react';
 import { Message, ChatSession, GrantCall } from '../types/chat';
 
-const API_URL = 'https://tfm-ecjg.onrender.com';
+// web/project/src/hooks/useChat.ts
+const API_URL = 'http://localhost:4000';
+console.log("API_URL en useChat:", API_URL);
+
 
 export const useChat = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -85,9 +88,13 @@ export const useChat = () => {
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: 'assistant',
-          content: data.reply
-            ? JSON.stringify(data.reply, null, 2)
-            : 'Respuesta del backend',
+          content: Array.isArray(data.reply)
+            ? data.reply.map((item: any, idx: number) =>
+                `${idx + 1}. ${item.descripcion || item.title || JSON.stringify(item)}`
+              ).join('\n\n')
+            : (typeof data.reply === "string"
+                ? data.reply
+                : JSON.stringify(data.reply, null, 2)),
           timestamp: new Date(),
           phase: currentSession.phase,
         };
