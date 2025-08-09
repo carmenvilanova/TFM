@@ -15,8 +15,18 @@ def main():
     convocatorias = buscar_convocatorias(**filtros)
     print("Después de buscar_convocatorias", file=sys.stderr)
     
-    resultados = convocatorias.head(10).to_dict(orient="records")
+    resultados = []
+    for row in convocatorias.head(10).to_dict(orient="records"):
+        resultados.append({
+            "id": row.get("id", ""),
+            "title": row.get("descripcion", ""),  # O usa otro campo si prefieres
+            "description": row.get("descripcion", ""),
+            "deadline": row.get("fechaRecepcion", ""),
+            "amount": "",  # Si tienes campo de importe, ponlo aquí
+            "category": row.get("nivel1", ""),
+        })
     print("Resultados preparados", file=sys.stderr)
+    
     print(json.dumps(resultados))  # Devolver JSON por stdout
 
 if __name__ == "__main__":

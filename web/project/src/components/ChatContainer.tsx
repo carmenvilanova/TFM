@@ -15,6 +15,7 @@ interface ChatContainerProps {
   onFileUpload?: (file: File) => void;
 }
 
+
 // Mock grant data for demonstration
 const mockGrants: GrantCall[] = [
   {
