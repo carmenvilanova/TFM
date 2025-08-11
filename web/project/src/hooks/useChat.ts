@@ -78,22 +78,25 @@ export const useChat = () => {
       try {
         const response = await fetch(`${API_URL}/api/message`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content, phase: currentSession.phase }),
         });
-
         const data = await response.json();
+
+        // Extrae las ayudas reales de reply.results
+        const grants: GrantCall[] = Array.isArray(data.reply?.results) ? data.reply.results : [];
 
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: 'assistant',
-          content: data.reply
-            ? JSON.stringify(data.reply, null, 2)
-            : 'Respuesta del backend',
+          content: grants.length > 0
+            ? "Aquí tienes las ayudas encontradas:"
+            : (typeof data.reply === "string"
+                ? data.reply
+                : JSON.stringify(data.reply, null, 2)),
           timestamp: new Date(),
           phase: currentSession.phase,
+          grants: grants.length > 0 ? grants : undefined,
         };
 
         const finalSession = {

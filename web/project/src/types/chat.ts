@@ -4,6 +4,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   phase?: 'search' | 'document';
+  grants?: GrantCall[]; // <-- Añade esta línea
 }
 
 export interface ChatSession {

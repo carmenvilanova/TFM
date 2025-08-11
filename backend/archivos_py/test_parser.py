@@ -3,31 +3,30 @@ import json
 from parser_parametros import parsear_busqueda_subvenciones, buscar_convocatorias
 
 def main():
-    print("INICIO", file=sys.stderr)
     input_text = sys.argv[1]
-    print(f"Input: {input_text}", file=sys.stderr)
-    
-    print("Antes de parsear_busqueda_subvenciones", file=sys.stderr)
     filtros = parsear_busqueda_subvenciones(input_text)
-    print(f"Después de parsear_busqueda_subvenciones: {filtros}", file=sys.stderr)
-    
-    print("Antes de buscar_convocatorias", file=sys.stderr)
     convocatorias = buscar_convocatorias(**filtros)
-    print("Después de buscar_convocatorias", file=sys.stderr)
-    
+
     resultados = []
     for row in convocatorias.head(10).to_dict(orient="records"):
         resultados.append({
-            "id": row.get("id", ""),
-            "title": row.get("descripcion", ""),  # O usa otro campo si prefieres
+            "id": str(row.get("id", "")),
+            "title": row.get("descripcion", ""),
             "description": row.get("descripcion", ""),
             "deadline": row.get("fechaRecepcion", ""),
-            "amount": "",  # Si tienes campo de importe, ponlo aquí
+            "amount": row.get("importe", ""),  # si no existe, devolver ""
             "category": row.get("nivel1", ""),
         })
-    print("Resultados preparados", file=sys.stderr)
-    
-    print(json.dumps(resultados))  # Devolver JSON por stdout
+
+    respuesta = {
+        "reply": {
+            "results": resultados,  # lista de GrantCall
+            "total": len(convocatorias),
+            "filters_used": filtros
+        }
+    }
+
+    print(json.dumps(respuesta, ensure_ascii=False))
 
 if __name__ == "__main__":
     try:
