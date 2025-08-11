@@ -12,8 +12,8 @@ import openai
 import json
 import os
 import unicodedata
-import PyPDF2
 import time
+import sys
 
 
 
@@ -467,7 +467,7 @@ class SubvencionesParser:
         cosine_scores = util.cos_sim(query_embedding, self.common_instrumentos_embeddings)[0]
         top_scores, top_indices = torch.topk(cosine_scores, 2)
         top=zip(top_scores.tolist(),top_indices.tolist())
-        print(top)
+        print(top, file=sys.stderr)
 
         top_terms=[]
         for score,indice in top:
@@ -501,7 +501,7 @@ class SubvencionesParser:
         query_embedding = self.model.encode(texto, convert_to_tensor=True)
         cosine_scores = util.cos_sim(query_embedding, self.common_finalidades_embeddings)[0]
         max_score=cosine_scores.max()
-        print(max_score)
+        print(max_score, file=sys.stderr)
         matchs=None
         if max_score>.2:
           max_pos=torch.argmax(cosine_scores)
@@ -581,6 +581,7 @@ class SubvencionesParser:
         match = re.search(r'\b\d{6}\b', texto)
         return match.group() if match else None
 
+parser = SubvencionesParser()
 
 # --- Función Principal de Parsing ---
 def parsear_busqueda_subvenciones(texto_busqueda: str) -> Dict[str, Any]:
@@ -595,7 +596,7 @@ def parsear_busqueda_subvenciones(texto_busqueda: str) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Un diccionario con los parámetros de búsqueda extraídos.
     """
-    parser = SubvencionesParser()
+    
     return parser.extraer_parametros(texto_busqueda)
 
 
