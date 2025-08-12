@@ -4,7 +4,6 @@ export interface Message {
   content: string;
   timestamp: Date;
   phase?: 'search' | 'document';
-  grants?: GrantCall[]; // <-- Añade esta línea
 }
 
 export interface ChatSession {
@@ -13,6 +12,17 @@ export interface ChatSession {
   messages: Message[];
   phase: 'search' | 'document';
   createdAt: Date;
+  uploadedFiles?: UploadedFile[];
+}
+
+export interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  uploadedAt: Date;
+  file: File;
 }
 
 export interface GrantCall {

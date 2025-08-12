@@ -1,11 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Message, ChatSession, GrantCall } from '../types/chat';
-
-// web/project/src/hooks/useChat.ts
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000'; // Cambia esto según tu entorno
-
-console.log("API_URL en useChat:", API_URL);
-
+import { Message, ChatSession, GrantCall, UploadedFile } from '../types/chat';
 
 export const useChat = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -16,20 +10,18 @@ export const useChat = () => {
     const newSession: ChatSession = {
       id: Date.now().toString(),
       title: 'Nueva Consulta',
-      messages: [
-        {
-          id: Date.now().toString(),
-          type: 'system',
-          content:
-            '¡Bienvenido al Asistente de Subvenciones! Puedo ayudarte a buscar ayudas públicas o responder preguntas sobre documentos específicos de subvenciones. Elige tu modo arriba y comienza a hacer preguntas.',
-          timestamp: new Date(),
-        },
-      ],
+      messages: [{
+        id: Date.now().toString(),
+        type: 'system',
+        content: '¡Bienvenido al Asistente de Subvenciones! Puedo ayudarte a buscar ayudas públicas o responder preguntas sobre documentos específicos de subvenciones. Elige tu modo arriba y comienza a hacer preguntas.',
+        timestamp: new Date(),
+      }],
       phase: 'search',
       createdAt: new Date(),
+      uploadedFiles: [],
     };
-
-    setSessions((prev) => [newSession, ...prev]);
+    
+    setSessions(prev => [newSession, ...prev]);
     setCurrentSession(newSession);
     return newSession;
   }, []);
@@ -38,152 +30,149 @@ export const useChat = () => {
     setCurrentSession(session);
   }, []);
 
-  const deleteSession = useCallback(
-    (sessionId: string) => {
-      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
-      if (currentSession?.id === sessionId) {
-        setCurrentSession(null);
-      }
-    },
-    [currentSession]
-  );
+  const deleteSession = useCallback((sessionId: string) => {
+    setSessions(prev => prev.filter(s => s.id !== sessionId));
+    if (currentSession?.id === sessionId) {
+      setCurrentSession(null);
+    }
+  }, [currentSession]);
 
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!currentSession) return;
+  const sendMessage = useCallback(async (content: string) => {
+    if (!currentSession) return;
 
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        type: 'user',
-        content,
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      type: 'user',
+      content,
+      timestamp: new Date(),
+      phase: currentSession.phase,
+    };
+
+    // Update current session with user message
+    const updatedSession = {
+      ...currentSession,
+      messages: [...currentSession.messages, userMessage],
+      title: currentSession.title === 'Nueva Consulta' ? content.slice(0, 30) + '...' : currentSession.title,
+    };
+
+    setCurrentSession(updatedSession);
+    setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
+    setIsLoading(true);
+
+    try {
+      // Simulate API call to your chatbot backend
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: currentSession.phase === 'search' 
+          ? `He encontrado varias ayudas relacionadas con "${content}". Aquí tienes algunas opciones relevantes:\n\n• Programa de Ayudas para Vivienda Social - Hasta 500.000€\n• Iniciativa de Vivienda Comunitaria - Hasta 250.000€\n• Programa de Vivienda Asequible - Hasta 1.000.000€\n\n¿Te gustaría que te proporcione más detalles sobre alguna de estas ayudas?`
+          : `Basándome en el documento de la ayuda, aquí están los detalles clave sobre "${content}":\n\n• Los requisitos de elegibilidad incluyen...\n• Las fechas límite de solicitud son...\n• La documentación requerida incluye...\n\n¿Te gustaría que aclare algún aspecto específico?`,
         timestamp: new Date(),
         phase: currentSession.phase,
       };
 
-      const updatedSession = {
-        ...currentSession,
-        messages: [...currentSession.messages, userMessage],
-        title:
-          currentSession.title === 'Nueva Consulta'
-            ? content.slice(0, 30) + '...'
-            : currentSession.title,
+      const finalSession = {
+        ...updatedSession,
+        messages: [...updatedSession.messages, assistantMessage],
       };
 
-      setCurrentSession(updatedSession);
-      setSessions((prev) =>
-        prev.map((s) => (s.id === updatedSession.id ? updatedSession : s))
-      );
-      setIsLoading(true);
+      setCurrentSession(finalSession);
+      setSessions(prev => prev.map(s => s.id === finalSession.id ? finalSession : s));
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentSession]);
 
-      try {
-        const response = await fetch(`${API_URL}/api/message`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content, phase: currentSession.phase }),
-        });
-        const data = await response.json();
+  const changePhase = useCallback((phase: 'search' | 'document') => {
+    if (!currentSession) return;
 
-        // Extrae las ayudas reales de reply.results
-        const grants: GrantCall[] = Array.isArray(data.reply?.results) ? data.reply.results : [];
+    const updatedSession = {
+      ...currentSession,
+      phase,
+    };
 
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: 'assistant',
-          content: grants.length > 0
-            ? "Aquí tienes las ayudas encontradas:"
-            : (typeof data.reply === "string"
-                ? data.reply
-                : JSON.stringify(data.reply, null, 2)),
-          timestamp: new Date(),
-          phase: currentSession.phase,
-          grants: grants.length > 0 ? grants : undefined,
-        };
+    setCurrentSession(updatedSession);
+    setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
+  }, [currentSession]);
 
-        const finalSession = {
-          ...updatedSession,
-          messages: [...updatedSession.messages, assistantMessage],
-        };
+  const selectGrant = useCallback((grant: GrantCall) => {
+    if (!currentSession) return;
 
-        setCurrentSession(finalSession);
-        setSessions((prev) =>
-          prev.map((s) => (s.id === finalSession.id ? finalSession : s))
-        );
-      } catch (error) {
-        console.error('Error sending message:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [currentSession]
-  );
+    const systemMessage: Message = {
+      id: Date.now().toString(),
+      type: 'system',
+      content: `Has seleccionado "${grant.title}" para consultas detalladas. Ahora tengo acceso al documento completo de la ayuda. Puedes hacerme preguntas específicas sobre elegibilidad, requisitos, plazos o cualquier otro detalle.`,
+      timestamp: new Date(),
+    };
 
-  const changePhase = useCallback(
-    (phase: 'search' | 'document') => {
-      if (!currentSession) return;
+    const updatedSession = {
+      ...currentSession,
+      messages: [...currentSession.messages, systemMessage],
+      phase: 'document' as const,
+    };
 
-      const updatedSession = {
-        ...currentSession,
-        phase,
-      };
+    setCurrentSession(updatedSession);
+    setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
+  }, [currentSession]);
 
-      setCurrentSession(updatedSession);
-      setSessions((prev) =>
-        prev.map((s) => (s.id === updatedSession.id ? updatedSession : s))
-      );
-    },
-    [currentSession]
-  );
+  const handleFileUpload = useCallback((file: File) => {
+    if (!currentSession) return;
 
-  const selectGrant = useCallback(
-    (grant: GrantCall) => {
-      if (!currentSession) return;
+    const uploadedFile: UploadedFile = {
+      id: Date.now().toString(),
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+      uploadedAt: new Date(),
+      file: file,
+    };
 
-      const systemMessage: Message = {
-        id: Date.now().toString(),
-        type: 'system',
-        content: `Has seleccionado "${grant.title}" para consultas detalladas. Ahora tengo acceso al documento completo de la ayuda. Puedes hacerme preguntas específicas sobre elegibilidad, requisitos, plazos o cualquier otro detalle.`,
-        timestamp: new Date(),
-      };
+    const systemMessage: Message = {
+      id: Date.now().toString(),
+      type: 'system',
+      content: `Archivo "${file.name}" (${(file.size / 1024).toFixed(1)} KB) subido correctamente. Metadatos disponibles abajo. Ahora puedes hacer preguntas sobre el contenido de este documento.`,
+      timestamp: new Date(),
+    };
 
-      const updatedSession = {
-        ...currentSession,
-        messages: [...currentSession.messages, systemMessage],
-        phase: 'document' as const,
-      };
+    const updatedSession = {
+      ...currentSession,
+      messages: [...currentSession.messages, systemMessage],
+      uploadedFiles: [...(currentSession.uploadedFiles || []), uploadedFile],
+    };
 
-      setCurrentSession(updatedSession);
-      setSessions((prev) =>
-        prev.map((s) => (s.id === updatedSession.id ? updatedSession : s))
-      );
-    },
-    [currentSession]
-  );
+    setCurrentSession(updatedSession);
+    setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
 
-  const handleFileUpload = useCallback(
-    (file: File) => {
-      if (!currentSession) return;
+    console.log('Archivo subido con metadatos:', uploadedFile);
+  }, [currentSession]);
 
-      const systemMessage: Message = {
-        id: Date.now().toString(),
-        type: 'system',
-        content: `Archivo "${file.name}" subido correctamente. Ahora puedes hacer preguntas sobre el contenido de este documento.`,
-        timestamp: new Date(),
-      };
+  const handleFileDownload = useCallback((uploadedFile: UploadedFile) => {
+    const url = URL.createObjectURL(uploadedFile.file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = uploadedFile.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, []);
 
-      const updatedSession = {
-        ...currentSession,
-        messages: [...currentSession.messages, systemMessage],
-      };
+  const handleFileRemove = useCallback((fileId: string) => {
+    if (!currentSession) return;
 
-      setCurrentSession(updatedSession);
-      setSessions((prev) =>
-        prev.map((s) => (s.id === updatedSession.id ? updatedSession : s))
-      );
+    const updatedSession = {
+      ...currentSession,
+      uploadedFiles: (currentSession.uploadedFiles || []).filter(f => f.id !== fileId),
+    };
 
-      console.log('Archivo subido:', file);
-    },
-    [currentSession]
-  );
+    setCurrentSession(updatedSession);
+    setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
+  }, [currentSession]);
 
   return {
     sessions,
@@ -196,5 +185,7 @@ export const useChat = () => {
     changePhase,
     selectGrant,
     handleFileUpload,
+    handleFileDownload,
+    handleFileRemove,
   };
 };
