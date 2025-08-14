@@ -11,7 +11,6 @@ export interface ChatSession {
   title: string;
   messages: Message[];
   phase: 'search' | 'document';
-  grants?: GrantCall[]; // <-- Añade esta línea
   createdAt: Date;
   uploadedFiles?: UploadedFile[];
 }

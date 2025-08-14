@@ -18,6 +18,34 @@ interface ChatContainerProps {
   onFileRemove: (fileId: string) => void;
 }
 
+// Mock grant data for demonstration
+const mockGrants: GrantCall[] = [
+  {
+    id: '1',
+    title: 'Programa de Ayudas para Vivienda Social',
+    description: 'Financiación para proyectos de desarrollo de vivienda asequible en comunidades desfavorecidas. Esta ayuda apoya nueva construcción y rehabilitación de viviendas existentes.',
+    deadline: '15 de marzo, 2024',
+    amount: 'Hasta 500.000€',
+    category: 'Vivienda',
+  },
+  {
+    id: '2',
+    title: 'Iniciativa de Vivienda Comunitaria',
+    description: 'Apoyo para iniciativas de vivienda comunitaria incluyendo programas para compradores primerizos y asistencia de alquiler.',
+    deadline: '30 de abril, 2024',
+    amount: 'Hasta 250.000€',
+    category: 'Vivienda',
+  },
+  {
+    id: '3',
+    title: 'Fondo de Innovación en Vivienda Sostenible',
+    description: 'Subvenciones para soluciones innovadoras de vivienda sostenible y tecnologías de construcción verde.',
+    deadline: '20 de mayo, 2024',
+    amount: 'Hasta 1.000.000€',
+    category: 'Vivienda',
+  },
+];
+
 export const ChatContainer: React.FC<ChatContainerProps> = ({
   session,
   isLoading,
@@ -44,12 +72,6 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
     session.messages.some(msg => msg.type === 'user' && 
       (msg.content.toLowerCase().includes('vivienda') || msg.content.toLowerCase().includes('housing')));
 
-  
-  // Busca el último mensaje del asistente con grants reales
-  const lastAssistantMsgWithGrants = [...session.messages]
-    .reverse()
-    .find(msg => msg.type === 'assistant' && Array.isArray((msg as any).grants) && (msg as any).grants.length > 0);
-
   return (
     <div className="flex-1 flex flex-col bg-white">
       <div className="border-b border-amber-200 p-5 bg-gradient-to-r from-red-50 to-amber-50">
@@ -68,15 +90,15 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
         {session.messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}
-
-        {lastAssistantMsgWithGrants && (
+        
+        {shouldShowGrantCards && (
           <div className="mb-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-red-600" />
               Ayudas Disponibles
             </h3>
             <div className="grid gap-4">
-              {(lastAssistantMsgWithGrants as any).grants.map((grant: GrantCall) => (
+              {mockGrants.map((grant) => (
                 <GrantCard 
                   key={grant.id} 
                   grant={grant} 
@@ -86,7 +108,26 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
             </div>
           </div>
         )}
-
+        
+        {session.uploadedFiles && session.uploadedFiles.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-red-600" />
+              Archivos Subidos ({session.uploadedFiles.length})
+            </h3>
+            <div className="grid gap-4">
+              {session.uploadedFiles.map((file) => (
+                <FileMetadata
+                  key={file.id}
+                  file={file}
+                  onDownload={onFileDownload}
+                  onRemove={onFileRemove}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
       
