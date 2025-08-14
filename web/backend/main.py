@@ -17,14 +17,17 @@ app.add_middleware(
 
 @app.post("/ask")
 async def ask_subvencion(question: str = Body(..., embed=True)):
-    # Paso 1: buscar convocatorias relevantes
+    # Paso 1: buscar convocatorias relevantes (logica Luisito)
     df = data_frame_resumen(question)
     if df.empty:
         return {"answer": "No se encontraron convocatorias relacionadas."}
 
-    # Paso 2: Aquí podrías elegir una convocatoria y descargar sus documentos
-    # (o varias, según la lógica que definas)
-    # Paso 3: hacer la pregunta al RAG con el contexto
+    # Paso 2: Aquí se podría elegir una convocatoria y descargar sus documentos
+    # (o varias, según la lógica que se defina)
+    # entonces aqui se pasa a texto eso
+
+
+    # Paso 3: hacer la pregunta al RAG con el contexto :D
     answer = preguntar_al_modelo_rag(question)
 
     return {
@@ -33,4 +36,4 @@ async def ask_subvencion(question: str = Body(..., embed=True)):
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)
