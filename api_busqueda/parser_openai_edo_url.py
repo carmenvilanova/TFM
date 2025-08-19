@@ -22,7 +22,7 @@ import unicodedata
 
 import time
 
-api_key = "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"
+api_key = ""
 
 client = OpenAI(api_key=api_key)
 LLM_CACHE = {}
