@@ -194,4 +194,7 @@ results/
 .env.production
 .env.staging
 secrets.json
-config.json 
+config.json
+
+# OpenAI API key file
+api_busqueda/openai_api_key.txt 

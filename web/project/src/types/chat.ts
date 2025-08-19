@@ -33,3 +33,20 @@ export interface GrantCall {
   amount: string;
   category: string;
 }
+
+export interface SearchResult {
+  numeroConvocatoria: string;
+  descripcion: string;
+  fechaRecepcion: string;
+  nivel1: string;
+  nivel2: string;
+  presupuesto_total: string;
+  inicio: string;
+  final: string;
+  bases: string;
+  estado: 'abierta' | 'cerrada' | 'cerrada-no-publica';
+}
+
+export interface SearchResultsResponse {
+  resultados: SearchResult[];
+}

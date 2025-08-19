@@ -1,0 +1,64 @@
+{
+  "resultados": [
+    {
+      "numeroConvocatoria": "831070",
+      "descripcion": "Resolución de 7 de mayo de la Universidad Complutense de Madrid por la que se\nconvocan los Premios por Excelencia Docente correspondientes a la\nconvocatoria 2023-24",
+      "fechaRecepcion": "2025-05-07T00:00:00",
+      "nivel1": "OTROS",
+      "nivel2": "UNIVERSIDAD COMPLUTENSE DE MADRID",
+      "presupuesto_total": "0.00",
+      "inicio": "dia siguiente a publicación en BOCM",
+      "final": "diez dias habiles posteriores a publicación en BOCM",
+      "bases": "https://sexenioscalidad.ucm.es/",
+      "estado": "cerrada"
+    },
+    {
+      "numeroConvocatoria": "830835",
+      "descripcion": "AJUSTE CONVOCATORIA BECAS ESCOLARIZ. CURSO 2023-2024",
+      "fechaRecepcion": "2025-05-07T00:00:00",
+      "nivel1": "MADRID",
+      "nivel2": "ÁREA DE GOBIERNO DE POLÍTICAS SOCIALES, FAMILIA E IGUALDAD",
+      "presupuesto_total": "274,490.39",
+      "inicio": "DIA SIGUIENTE A LA PUBLICACION DEL EXTRACTO DE LA CONVOCATORIA EN EL BOCM",
+      "final": "20 DIAS NATURALES DESDE EL SIGUIENTE A LA PUBLICACIÓN DEL EXTRACTO DE LA CONVOCATORIA EN EL BOCM",
+      "bases": "https://www.bocm.es/boletin/CM_Orden_BOCM/2013/11/22/BOCM-20131122-34.PDF",
+      "estado": "cerrada"
+    },
+    {
+      "numeroConvocatoria": "817799",
+      "descripcion": "BECAS ESCOLARIZACIÓN 2025-2026 PRIMER CICLO EI",
+      "fechaRecepcion": "2025-03-03T00:00:00",
+      "nivel1": "MADRID",
+      "nivel2": "ÁREA DE GOBIERNO DE POLÍTICAS SOCIALES, FAMILIA E IGUALDAD",
+      "presupuesto_total": "5,100,000.00",
+      "inicio": "DIA SIGUIENTE AL DE LA PUBLICACION DE LA CONVOCATORIA EN EL BOCM",
+      "final": "20 DIAS NATURALES DESDE EL DIA SIGUIENTE A LA PUBLICACION EN EL BOCM",
+      "bases": "https://www.bocm.es/boletin/CM_Orden_BOCM/2013/11/22/BOCM-20131122-34.PDF",
+      "estado": "cerrada"
+    },
+    {
+      "numeroConvocatoria": "788394",
+      "descripcion": "Corrección de errores del extracto de la resolución de 17 de septiembre de 2024 de la Universidad Complutense de Madrid por la que se convocan premios por excelencia docente",
+      "fechaRecepcion": "2024-10-01T00:00:00",
+      "nivel1": "OTROS",
+      "nivel2": "UNIVERSIDAD COMPLUTENSE DE MADRID",
+      "presupuesto_total": "0.00",
+      "inicio": "2024-09-27",
+      "final": "2024-10-10",
+      "bases": "https://sexenioscalidad.ucm.es/",
+      "estado": "cerrada"
+    },
+    {
+      "numeroConvocatoria": "794690",
+      "descripcion": "Bases reguladoras de Becas o Ayudas escolares de Excelencia en el Estudio para el ejercicio 2023/2024",
+      "fechaRecepcion": "2024-11-04T00:00:00",
+      "nivel1": "TORREJÓN DE LA CALZADA",
+      "nivel2": "AYUNTAMIENTO DE TORREJÓN DE LA CALZADA",
+      "presupuesto_total": "8,000.00",
+      "inicio": "El plazo presentación de solicitudes será de 10 días naturales dia siguiente publicación BOCM",
+      "final": "Día 11 después 10 naturales siguientes publicación BOCM",
+      "bases": "https://aytotorrejoncalzada.sedelectronica.es",
+      "estado": "cerrada-no-publica"
+    }
+  ]
+}

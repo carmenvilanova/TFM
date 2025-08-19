@@ -22,9 +22,11 @@ import unicodedata
 
 import time
 
-api_key = ""
+# Importar la configuración personalizada
+from config import get_openai_client
 
-client = OpenAI(api_key=api_key)
+# Obtener el cliente de OpenAI configurado
+client = get_openai_client()
 LLM_CACHE = {}
 
 import openai

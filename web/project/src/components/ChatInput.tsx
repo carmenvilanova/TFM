@@ -5,18 +5,20 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isLoading?: boolean;
   placeholder?: string;
-  onFileUpload?: (file: File) => void;
+  onFileUpload?: (files: File[]) => void;
+  allowFileUpload?: boolean;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({ 
   onSendMessage, 
   isLoading = false, 
   placeholder = "Pregunta sobre ayudas...",
-  onFileUpload
+  onFileUpload,
+  allowFileUpload = true
 }) => {
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -30,17 +32,24 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setUploadedFile(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setUploadedFiles(files);
       if (onFileUpload) {
-        onFileUpload(file);
+        onFileUpload(files);
       }
     }
   };
 
-  const removeFile = () => {
-    setUploadedFile(null);
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeAllFiles = () => {
+    setUploadedFiles([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -104,30 +113,56 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <div className="bg-white border-t border-amber-200">
-      {uploadedFile && (
+      {allowFileUpload && uploadedFiles.length > 0 && (
         <div className="px-4 pt-3 pb-2 border-b border-amber-100 animate-fade-in">
-          <div className="flex items-center gap-2 p-2 bg-amber-50 rounded-lg transition-all-smooth hover:bg-amber-100">
-            <Upload className="w-4 h-4 text-amber-600 animate-bounce-gentle" />
-            <span className="text-sm text-gray-700 flex-1">{uploadedFile.name}</span>
-            <button
-              type="button"
-              onClick={removeFile}
-              className="p-1 text-red-500 hover:text-red-700 transition-all-smooth hover:scale-110 hover:bg-red-50 rounded"
-            >
-              <X className="w-4 h-4 transition-transform-smooth hover:rotate-90" />
-            </button>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">
+              {uploadedFiles.length} archivo{uploadedFiles.length > 1 ? 's' : ''} seleccionado{uploadedFiles.length > 1 ? 's' : ''}
+            </span>
+            {uploadedFiles.length > 1 && (
+              <button
+                type="button"
+                onClick={removeAllFiles}
+                className="text-xs text-red-500 hover:text-red-700 transition-colors"
+              >
+                Quitar todos
+              </button>
+            )}
+          </div>
+          <div className="space-y-2 max-h-32 overflow-y-auto">
+            {uploadedFiles.map((file, index) => (
+              <div key={`${file.name}-${index}`} className="flex items-center gap-2 p-2 bg-amber-50 rounded-lg transition-all-smooth hover:bg-amber-100">
+                <Upload className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <span className="text-sm text-gray-700 flex-1 truncate" title={file.name}>
+                  {file.name}
+                </span>
+                <span className="text-xs text-gray-500 flex-shrink-0">
+                  {(file.size / 1024).toFixed(1)} KB
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(index)}
+                  className="p-1 text-red-500 hover:text-red-700 transition-all-smooth hover:scale-110 hover:bg-red-50 rounded flex-shrink-0"
+                >
+                  <X className="w-4 h-4 transition-transform-smooth hover:rotate-90" />
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       )}
       
       <form onSubmit={handleSubmit} className="flex gap-3 p-4">
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          accept=".pdf,.doc,.docx,.txt"
-          className="hidden"
-        />
+        {allowFileUpload && (
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".pdf,.doc,.docx,.txt"
+            multiple
+            className="hidden"
+          />
+        )}
         
         <div className="flex-1 relative">
           <textarea
@@ -136,18 +171,20 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             onKeyPress={handleKeyPress}
             placeholder={placeholder}
             disabled={isLoading}
-            className="w-full px-4 py-3 pr-12 bg-amber-50 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none min-h-[52px] max-h-32 text-gray-800"
+            className={`w-full px-4 py-3 ${allowFileUpload ? 'pr-12' : 'pr-4'} bg-amber-50 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none min-h-[52px] max-h-32 text-gray-800`}
             rows={1}
           />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute right-2 top-2 p-2 text-amber-400 hover:text-amber-600 transition-all-smooth hover:scale-110 hover:bg-amber-50 rounded"
-            disabled={isLoading}
-            title="Adjuntar documento"
-          >
-            <Paperclip className="w-4 h-4 transition-transform-smooth hover:rotate-12" />
-          </button>
+          {allowFileUpload && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute right-2 top-2 p-2 text-amber-400 hover:text-amber-600 transition-all-smooth hover:scale-110 hover:bg-amber-50 rounded"
+              disabled={isLoading}
+              title="Adjuntar documento"
+            >
+              <Paperclip className="w-4 h-4 transition-transform-smooth hover:rotate-12" />
+            </button>
+          )}
         </div>
         <div className="flex gap-2">
           <button

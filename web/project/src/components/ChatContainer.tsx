@@ -13,7 +13,7 @@ interface ChatContainerProps {
   onSendMessage: (message: string) => void;
   onPhaseChange: (phase: 'search' | 'document') => void;
   onGrantSelect: (grant: GrantCall) => void;
-  onFileUpload: (file: File) => void;
+  onFileUpload: (files: File[]) => void;
   onFileDownload: (file: UploadedFile) => void;
   onFileRemove: (fileId: string) => void;
 }
@@ -136,6 +136,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
         isLoading={isLoading}
         placeholder={getPlaceholder()}
         onFileUpload={onFileUpload}
+        allowFileUpload={session.phase === 'document'}
       />
     </div>
   );

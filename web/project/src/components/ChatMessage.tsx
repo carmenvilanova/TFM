@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, Bot, Info } from 'lucide-react';
-import { Message } from '../types/chat';
+import { Message, SearchResultsResponse } from '../types/chat';
+import { SearchResultsList } from './SearchResultsList';
 
 interface ChatMessageProps {
   message: Message;
@@ -9,6 +10,16 @@ interface ChatMessageProps {
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.type === 'user';
   const isSystem = message.type === 'system';
+
+  // Check if message content is search results JSON
+  const isSearchResults = !isUser && !isSystem && (() => {
+    try {
+      const parsed = JSON.parse(message.content);
+      return parsed.resultados && Array.isArray(parsed.resultados);
+    } catch {
+      return false;
+    }
+  })();
 
   const getIcon = () => {
     if (isUser) return <User className="w-5 h-5" />;
@@ -27,6 +38,32 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     if (isSystem) return 'bg-amber-600 text-white';
     return 'bg-gray-700 text-white';
   };
+
+  // If it's search results, render in a special layout
+  if (isSearchResults) {
+    try {
+      const searchData: SearchResultsResponse = JSON.parse(message.content);
+      return (
+        <div className="flex gap-3 mb-6 animate-fade-in animate-slide-in-left">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all-smooth hover:scale-110 ${getIconStyle()}`}>
+            {getIcon()}
+          </div>
+          <div className="flex-1 max-w-full">
+            <div className="text-sm font-medium mb-3 text-gray-700">
+              Asistente de Subvenciones
+            </div>
+            <SearchResultsList data={searchData} />
+            <div className="text-xs opacity-70 mt-3 text-gray-500">
+              {message.timestamp.toLocaleTimeString()}
+            </div>
+          </div>
+        </div>
+      );
+    } catch (error) {
+      console.error('Error parsing search results:', error);
+      // Fallback to regular message display
+    }
+  }
 
   return (
     <div className={`flex gap-3 mb-4 animate-fade-in ${isUser ? 'justify-end animate-slide-in-right' : 'justify-start animate-slide-in-left'}`}>

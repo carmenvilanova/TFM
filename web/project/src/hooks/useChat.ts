@@ -83,7 +83,7 @@ export const useChat = () => {
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: 'assistant',
-          content: JSON.stringify(data, null, 2), // simple, raw response
+          content: JSON.stringify(data), // Keep as JSON for SearchResultsList to parse
           timestamp: new Date(),
           phase: currentSession.phase,
         };
@@ -119,25 +119,25 @@ export const useChat = () => {
   );
 
   const handleFileUpload = useCallback(
-    (file: File) => {
-      if (!currentSession) return;
+    (files: File[]) => {
+      if (!currentSession || files.length === 0) return;
 
-      const uploadedFile: UploadedFile = {
-        id: Date.now().toString(),
+      const uploadedFiles: UploadedFile[] = files.map((file, index) => ({
+        id: (Date.now() + index).toString(),
         name: file.name,
         size: file.size,
         type: file.type,
         lastModified: file.lastModified,
         uploadedAt: new Date(),
         file,
-      };
+      }));
 
       const systemMessage: Message = {
         id: Date.now().toString(),
         type: 'system',
-        content: `Archivo "${file.name}" (${(file.size / 1024).toFixed(
-          1
-        )} KB) subido correctamente.`,
+        content: files.length === 1 
+          ? `Archivo "${files[0].name}" (${(files[0].size / 1024).toFixed(1)} KB) subido correctamente.`
+          : `${files.length} archivos subidos correctamente: ${files.map(f => f.name).join(', ')}`,
         timestamp: new Date(),
       };
 
@@ -146,7 +146,7 @@ export const useChat = () => {
         messages: [...currentSession.messages, systemMessage],
         uploadedFiles: [
           ...(currentSession.uploadedFiles || []),
-          uploadedFile,
+          ...uploadedFiles,
         ],
       };
 
