@@ -28,7 +28,7 @@ from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
 
 
-
+# Definir clases
 class get_convocatorias:
     def __init__(self, param_grid, url, headers_grid ): 
         self.param_grid = param_grid
