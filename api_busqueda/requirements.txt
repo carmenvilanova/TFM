@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+pandas
+numpy
+pydantic
+requests
+openai>=1.0.0
