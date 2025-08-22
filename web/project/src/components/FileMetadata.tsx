@@ -87,16 +87,20 @@ export const FileMetadata: React.FC<FileMetadataProps> = ({ file, onDownload, on
           Descargar
         </button>
         <button
-          onClick={() => {
-            // Aqui meteremos lo de enviar al backend el archivo! 
-            console.log('Enviando archivo al backend:', {
-              id: file.id,
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              lastModified: file.lastModified
+          onClick={async () => {
+            // Subir el archivo al backend y procesarlo con RAG
+            const formData = new FormData();
+            formData.append('file', file.file); // file.file debe ser de tipo File
+
+            const res = await fetch('http://localhost:8000/procesar_documento', {
+              method: 'POST',
+              body: formData,
             });
-            alert(`Archivo "${file.name}" enviado al backend (Aqui implementariamos nuestra funcionalidad para enviarlo al backend pero esta recuperando la info! :D)`);
+            if (res.ok) {
+              alert(`Documento "${file.name}" enviado y procesado. Puedes empezar a hacer preguntas a este documento.`);
+            } else {
+              alert(`Error al enviar el documento "${file.name}".`);
+            }
           }}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all-smooth font-medium shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
         >

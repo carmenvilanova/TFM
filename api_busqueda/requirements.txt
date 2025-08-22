@@ -5,3 +5,9 @@ numpy
 pydantic
 requests
 openai>=1.0.0
+pdfplumber==0.11.7
+torch==2.8.0
+sentence-transformers==5.1.0
+transformers==4.55.2
+accelerate==1.10.0
+python-multipart==0.0.20
