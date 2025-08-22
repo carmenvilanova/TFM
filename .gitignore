@@ -198,3 +198,4 @@ config.json
 
 # OpenAI API key file
 api_busqueda/openai_api_key.txt 
+web/backend/openai_api_key.txt
