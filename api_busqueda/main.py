@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 from parser_openai_edo_url import data_frame_resumen
-from rag import procesar_documentos_convocatoria, preguntar_al_modelo_rag
+from rag_openai import procesar_documentos_convocatoria, preguntar_al_modelo_rag
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # Crear carpeta si no existe
-os.makedirs("uploaded_docs", exist_ok=True)
+os.makedirs("data/documentos_convocatoria", exist_ok=True)
 
 # --- Búsqueda de convocatorias ---
 class Pregunta(BaseModel):
@@ -33,27 +33,27 @@ def obtener_convocatorias(pregunta: Pregunta):
     try:
         df = data_frame_resumen(pregunta.texto)
         if not isinstance(df, pd.DataFrame):
+            print("ERROR: data_frame_resumen no devolvió un DataFrame")
             return {"error": "data_frame_resumen no devolvió un DataFrame"}
         df_clean = df.replace([np.inf, -np.inf], np.nan).fillna("no info")
-        return {"resultados": df_clean.to_dict(orient="records")}
+        resultados = df_clean.to_dict(orient="records")
+        print("Convocatorias:", resultados)
+        return {"resultados": resultados}
     except Exception as e:
+        print("ERROR:", str(e))
         return {"error": str(e)}
 
 # --- Procesar documento para RAG ---
 @app.post("/procesar_documento")
 async def procesar_documento(file: UploadFile = File(...)):
-    try:
-        # Guardar el PDF en la carpeta correcta
-        os.makedirs(PDF_FOLDER, exist_ok=True)
-        save_path = os.path.join(PDF_FOLDER, file.filename)
-        with open(save_path, "wb") as f:
-            f.write(await file.read())
-
-        # Procesar el PDF localmente
-        procesar_documentos_convocatoria([{"id": file.filename, "nombreFic": file.filename}])
-        return {"status": "procesado", "filename": file.filename}
-    except Exception as e:
-        return {"error": str(e)}
+    # Guarda el archivo subido en la carpeta que espera el RAG
+    save_path = f"data/documentos_convocatoria/{file.filename}"
+    os.makedirs("data/documentos_convocatoria", exist_ok=True)
+    with open(save_path, "wb") as f:
+        f.write(await file.read())
+    # Procesa el documento con RAG
+    procesar_documentos_convocatoria([{"id": file.filename, "nombreFic": file.filename}])
+    return {"status": "procesado", "filename": file.filename}
 
 # --- Preguntar al RAG ---
 class RAGPregunta(BaseModel):

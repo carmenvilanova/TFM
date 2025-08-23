@@ -68,17 +68,19 @@ export const useChat = () => {
       setIsLoading(true);
 
       try {
+        const API_URL = 'http://localhost:8000';
         let res;
         let data;
+
         if (currentSession.phase === 'document') {
-          // Pregunta al RAG
-          res = await fetch('http://localhost:8000/preguntar_rag', {
+          // RAG (igual que antes)
+          res = await fetch(`${API_URL}/preguntar_rag`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pregunta: content }),
           });
           data = await res.json();
-          // Muestra la respuesta del RAG
+
           const respuesta = data.resultados?.[0]?.respuesta || data.error || "Sin respuesta";
           const assistantMessage: Message = {
             id: (Date.now() + 1).toString(),
@@ -87,6 +89,7 @@ export const useChat = () => {
             timestamp: new Date(),
             phase: currentSession.phase,
           };
+
           const finalSession: ChatSession = {
             ...updatedSession,
             messages: [...updatedSession.messages, assistantMessage],
@@ -95,15 +98,35 @@ export const useChat = () => {
           setSessions(prev =>
             prev.map(s => (s.id === finalSession.id ? finalSession : s))
           );
+
         } else {
-          // Búsqueda normal
-          res = await fetch('http://localhost:8000/convocatorias', {
+          // Búsqueda normal (convocatorias) en formato tarjetas
+          res = await fetch(`${API_URL}/convocatorias`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ texto: content }),
           });
+
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
           data = await res.json();
-          // ...tu lógica para mostrar resultados de convocatorias...
+
+          const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            type: 'assistant',
+            content: JSON.stringify(data), // JSON para que el componente renderice tarjetas
+            timestamp: new Date(),
+            phase: currentSession.phase,
+          };
+
+          const finalSession: ChatSession = {
+            ...updatedSession,
+            messages: [...updatedSession.messages, assistantMessage],
+          };
+          setCurrentSession(finalSession);
+          setSessions(prev =>
+            prev.map(s => (s.id === finalSession.id ? finalSession : s))
+          );
         }
       } catch (error: any) {
         console.error('Error sending message:', error);
