@@ -23,11 +23,24 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({ result }) =>
     }
   };
 
-  const formatAmount = (amount: string) => {
-    const numAmount = parseFloat(amount);
-    if (numAmount === 0) return 'No especificado';
-    return `${numAmount.toLocaleString('es-ES')}€`;
+  const formatAmount = (amount: string | null | undefined): string => {
+    if (!amount) return "No especificado";
+  
+    // quitar comas de miles
+    const clean = amount.replace(/,/g, "");
+  
+    const numAmount = parseFloat(clean);
+    if (Number.isNaN(numAmount) || numAmount === 0) return "No especificado";
+  
+    return numAmount.toLocaleString("es-ES", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
+  
+  
 
   const isPDF = (url: string) => {
     return url.toLowerCase().includes('.pdf');
