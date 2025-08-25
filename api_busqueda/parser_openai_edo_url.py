@@ -29,6 +29,7 @@ from config import get_openai_client
 client = get_openai_client()
 LLM_CACHE = {}
 
+
 import openai
 import json
 from typing import Dict, Any, Optional
@@ -252,17 +253,77 @@ def obtener_convocatoria_por_id(num_conv): #esta funcion toma un numero especifi
     else:
         return None
 
-def descargar_documento_pdf(documento_id, nombre): #esta funcion requiere el documento_id y nombre y descarga en ruta relativa el pdf en cuestión.
-    url = f"https://www.infosubvenciones.es/bdnstrans/api/convocatorias/documentos?idDocumento={documento_id}"
-    respuesta = requests.get(url)
-    if respuesta.status_code == 200:
-        ruta_relativa = os.path.join("documentos", nombre)
-        ruta_absoluta = os.path.abspath(ruta_relativa)
-        os.makedirs(os.path.dirname(ruta_absoluta), exist_ok=True)
-        with open(ruta_absoluta, "wb") as f:
-            f.write(respuesta.content)
-        return ruta_absoluta
-    return None
+def obtener_ids_y_nombres(numconv):
+    """
+    Devuelve [{id, name}] sin hacer peticiones de red y SIN forzar .pdf.
+    - Tolera payload anidado en 'convocatoria'
+    - Filtra entradas raras / sin id
+    - Conserva la extensión original de 'nombreFic' (docx, pdf, etc.)
+    """
+    try:
+        numconv = int(str(numconv).strip())
+    except (TypeError, ValueError):
+        return []
+
+    dic = obtener_convocatoria_por_id(numconv) or {}
+    conv = dic.get("convocatoria", dic) if isinstance(dic, dict) else {}
+    docs = conv.get("documentos") or []
+
+    if not isinstance(docs, list) or not docs:
+        return []
+
+    out = []
+    for d in docs:
+        if not isinstance(d, dict):
+            continue
+        doc_id = d.get("id")
+        if doc_id is None:
+            continue
+        doc_id = str(doc_id).strip()
+
+        # nombre preferente
+        name = d.get("nombreFic").strip()
+        # saneo básico de nombre (evita separadores de ruta)
+        name = name.replace("\\", "_").replace("/", "_")
+
+        out.append({"id": doc_id, "name": name})
+    return out
+
+
+
+BASE_DOC_URL = "https://www.infosubvenciones.es/bdnstrans/api/convocatorias/documentos?idDocumento={}"
+
+def descargar_documentos_a_disco(numconv, dest_dir="data/documentos_convocatoria"):
+    """
+    Descarga todos los PDFs a dest_dir y devuelve una lista con metadatos útiles.
+    """
+    os.makedirs(dest_dir, exist_ok=True)
+
+    docs = obtener_ids_y_nombres(numconv)
+    resultados = []
+
+    with requests.Session() as s:
+        s.headers.update({"User-Agent": "Mozilla/5.0"})
+        for d in docs:
+            url = BASE_DOC_URL.format(d["id"])
+            r = s.get(url, stream=True, timeout=30)
+            if not r.ok:
+                continue
+            path = os.path.join(dest_dir, d["name"])
+            with open(path, "wb") as f:
+                for chunk in r.iter_content(65536):
+                    if chunk:
+                        f.write(chunk)
+            resultados.append({
+                "id": d["id"],
+                "name": d["name"],
+                "path": path,                    # interno (no lo expongas al front)
+                "size": os.path.getsize(path)
+            })
+    return resultados
+
+
+
 
 
 def extraer_datos_convocatoria(numero, client):
