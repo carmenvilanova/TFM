@@ -9,7 +9,7 @@ services:
     build:
       context: ./web/project
       args:
-        REACT_APP_API_URL: http://localhost:8000
+        REACT_APP_API_URL: https://tfm-docker.onrender.com/
     ports:
       - "80:80"
     restart: always
