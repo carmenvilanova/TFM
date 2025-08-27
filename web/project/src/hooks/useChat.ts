@@ -68,7 +68,7 @@ export const useChat = () => {
       setIsLoading(true);
 
       try {0
-        const API_URL = 'https://tfm-docker.onrender.com/';
+        const API_URL = 'https://tfm-docker.onrender.com';
         let res;
         let data;
 

@@ -10,7 +10,7 @@ interface SearchResultCardProps {
   result: SearchResult;
 }
 
-const API_BASE = 'https://tfm-docker.onrender.com/';
+const API_BASE = 'https://tfm-docker.onrender.com';
 
 export const SearchResultCard: React.FC<SearchResultCardProps> = ({ result }) => {
   // --- NUEVO: estado de disponibilidad de documentos ---
