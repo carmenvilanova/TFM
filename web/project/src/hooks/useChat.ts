@@ -7,17 +7,27 @@ export const useChat = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const createNewSession = useCallback(() => {
+    const searchWelcomeMessage = {
+      id: Date.now().toString(),
+      type: 'system' as const,
+      content: '¡Bienvenido al panel de Búsqueda de Ayudas! Aquí puedes buscar subvenciones y ayudas públicas. Pregúntame sobre cualquier tipo de ayuda que necesites.',
+      timestamp: new Date(),
+    };
+
+    const documentWelcomeMessage = {
+      id: (Date.now() + 1).toString(),
+      type: 'system' as const,
+      content: '¡Bienvenido al panel de Consulta de Documentos! Aquí puedes analizar documentos específicos de subvenciones. Sube un documento para comenzar.',
+      timestamp: new Date(),
+    };
+
     const newSession: ChatSession = {
       id: Date.now().toString(),
       title: 'Nueva Consulta',
-      messages: [{
-        id: Date.now().toString(),
-        type: 'system',
-        content:
-          '¡Bienvenido al Asistente de Subvenciones! Puedo ayudarte a buscar ayudas públicas o responder preguntas sobre documentos específicos de subvenciones. Elige tu modo arriba y comienza a hacer preguntas.',
-        timestamp: new Date(),
-      }],
-      phase: 'search',
+      messages: [searchWelcomeMessage], // Deprecated - keeping for backward compatibility
+      searchMessages: [searchWelcomeMessage],
+      documentMessages: [documentWelcomeMessage],
+      phase: 'search', // Deprecated - keeping for backward compatibility
       createdAt: new Date(),
       uploadedFiles: [],
     };
@@ -27,7 +37,13 @@ export const useChat = () => {
   }, []);
 
   const selectSession = useCallback((session: ChatSession) => {
-    setCurrentSession(session);
+    // Migrate old sessions to new panel structure if needed
+    const migratedSession: ChatSession = {
+      ...session,
+      searchMessages: session.searchMessages || session.messages.filter(msg => !msg.phase || msg.phase === 'search'),
+      documentMessages: session.documentMessages || session.messages.filter(msg => msg.phase === 'document'),
+    };
+    setCurrentSession(migratedSession);
   }, []);
 
   const deleteSession = useCallback(
@@ -41,7 +57,7 @@ export const useChat = () => {
   );
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, panel: 'search' | 'document') => {
       if (!currentSession) return;
 
       const userMessage: Message = {
@@ -49,12 +65,23 @@ export const useChat = () => {
         type: 'user',
         content,
         timestamp: new Date(),
-        phase: currentSession.phase,
+        phase: panel,
       };
+
+      // Update the appropriate panel's messages
+      const currentPanelMessages = panel === 'search' 
+        ? currentSession.searchMessages 
+        : currentSession.documentMessages;
 
       const updatedSession: ChatSession = {
         ...currentSession,
-        messages: [...currentSession.messages, userMessage],
+        messages: [...currentSession.messages, userMessage], // Deprecated - keeping for backward compatibility
+        searchMessages: panel === 'search' 
+          ? [...currentSession.searchMessages, userMessage]
+          : currentSession.searchMessages,
+        documentMessages: panel === 'document' 
+          ? [...currentSession.documentMessages, userMessage]
+          : currentSession.documentMessages,
         title:
           currentSession.title === 'Nueva Consulta'
             ? content.slice(0, 30) + '...'
@@ -67,12 +94,12 @@ export const useChat = () => {
       );
       setIsLoading(true);
 
-      try {0
+      try {
         const API_URL = 'https://tfm-docker.onrender.com';
         let res;
         let data;
 
-        if (currentSession.phase === 'document') {
+        if (panel === 'document') {
           // RAG (igual que antes)
           res = await fetch(`${API_URL}/preguntar_rag`, {
             method: 'POST',
@@ -87,12 +114,13 @@ export const useChat = () => {
             type: 'assistant',
             content: respuesta,
             timestamp: new Date(),
-            phase: currentSession.phase,
+            phase: panel,
           };
 
           const finalSession: ChatSession = {
             ...updatedSession,
-            messages: [...updatedSession.messages, assistantMessage],
+            messages: [...updatedSession.messages, assistantMessage], // Deprecated - keeping for backward compatibility
+            documentMessages: [...updatedSession.documentMessages, assistantMessage],
           };
           setCurrentSession(finalSession);
           setSessions(prev =>
@@ -116,12 +144,13 @@ export const useChat = () => {
             type: 'assistant',
             content: JSON.stringify(data), // JSON para que el componente renderice tarjetas
             timestamp: new Date(),
-            phase: currentSession.phase,
+            phase: panel,
           };
 
           const finalSession: ChatSession = {
             ...updatedSession,
-            messages: [...updatedSession.messages, assistantMessage],
+            messages: [...updatedSession.messages, assistantMessage], // Deprecated - keeping for backward compatibility
+            searchMessages: [...updatedSession.searchMessages, assistantMessage],
           };
           setCurrentSession(finalSession);
           setSessions(prev =>
@@ -170,11 +199,13 @@ export const useChat = () => {
           ? `Archivo "${files[0].name}" (${(files[0].size / 1024).toFixed(1)} KB) subido correctamente.`
           : `${files.length} archivos subidos correctamente: ${files.map(f => f.name).join(', ')}`,
         timestamp: new Date(),
+        phase: 'document',
       };
 
       const updatedSession = {
         ...currentSession,
-        messages: [...currentSession.messages, systemMessage],
+        messages: [...currentSession.messages, systemMessage], // Deprecated - keeping for backward compatibility
+        documentMessages: [...currentSession.documentMessages, systemMessage],
         uploadedFiles: [
           ...(currentSession.uploadedFiles || []),
           ...uploadedFiles,

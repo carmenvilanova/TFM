@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AuthForm } from './components/AuthForm';
 import { UserMenu } from './components/UserMenu';
 import { Sidebar } from './components/Sidebar';
-import { ChatContainer } from './components/ChatContainer';
+import { PanelChatContainer } from './components/PanelChatContainer';
+import { LanguageSelector } from './components/LanguageSelector';
 import { useChat } from './hooks/useChat';
 import { useAuth } from './hooks/useAuth';
 import { Building2, Sparkles } from 'lucide-react';
 import { AuthMode } from './types/auth';
 
 function App() {
+  const { t } = useTranslation();
+  
   const {
     user,
     isAuthenticated,
@@ -61,15 +65,18 @@ function App() {
   if (!currentSession) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-red-50 flex items-center justify-center animate-fade-in">
+        <div className="absolute top-4 right-4">
+          <LanguageSelector />
+        </div>
         <div className="text-center animate-slide-in-left">
           <Building2 className="w-20 h-20 text-red-600 mx-auto mb-6 animate-bounce-gentle hover:scale-110 transition-transform-smooth" />
-          <h1 className="text-3xl font-bold text-gray-800 mb-3">Asistente de Subvenciones</h1>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">Búsqueda inteligente de ayudas y subvenciones públicas con análisis de documentos</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-3">{t('app.title')}</h1>
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">{t('app.description')}</p>
           <button
             onClick={createNewSession}
             className="px-8 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all-smooth font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
           >
-            Comenzar Nueva Consulta
+            {t('welcome.startNewQuery')}
           </button>
         </div>
       </div>
@@ -95,19 +102,21 @@ function App() {
                 <Sparkles className="w-6 h-6 text-amber-500 animate-pulse-gentle" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">Asistente de Subvenciones</h1>
-                <p className="text-sm text-gray-600">Búsqueda inteligente de ayudas públicas</p>
+                <h1 className="text-2xl font-bold text-gray-800">{t('app.title')}</h1>
+                <p className="text-sm text-gray-600">{t('app.subtitle')}</p>
               </div>
             </div>
-            <UserMenu user={user!} onLogout={logout} />
+            <div className="flex items-center gap-4">
+              <LanguageSelector />
+              <UserMenu user={user!} onLogout={logout} />
+            </div>
           </div>
         </header>
         
-        <ChatContainer
+        <PanelChatContainer
           session={currentSession}
           isLoading={isLoading}
           onSendMessage={sendMessage}
-          onPhaseChange={changePhase}
           onGrantSelect={selectGrant}
           onFileUpload={handleFileUpload}
           onFileDownload={handleFileDownload}

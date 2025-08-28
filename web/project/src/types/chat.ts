@@ -9,8 +9,10 @@ export interface Message {
 export interface ChatSession {
   id: string;
   title: string;
-  messages: Message[];
-  phase: 'search' | 'document';
+  messages: Message[]; // Deprecated - keeping for backward compatibility
+  searchMessages: Message[];
+  documentMessages: Message[];
+  phase: 'search' | 'document'; // Deprecated - keeping for backward compatibility
   createdAt: Date;
   uploadedFiles?: UploadedFile[];
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { User as UserType } from '../types/auth';
 
@@ -8,6 +9,7 @@ interface UserMenuProps {
 }
 
 export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -22,7 +24,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
         <div className="text-left">
           <div className="text-sm font-medium text-gray-800">
             {user.name}
-            {user.isGuest && <span className="text-amber-600 ml-1">(Invitado)</span>}
+            {user.isGuest && <span className="text-amber-600 ml-1">({t('auth.guest')})</span>}
           </div>
           <div className="text-xs text-gray-500">{user.email}</div>
         </div>
@@ -39,7 +41,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
             {!user.isGuest && (
               <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-amber-50 flex items-center gap-2 transition-all-smooth hover:scale-105">
                 <Settings className="w-4 h-4 transition-transform-smooth hover:rotate-90" />
-                Configuración
+                {t('common.settings', { defaultValue: 'Configuración' })}
               </button>
             )}
             <button 
@@ -47,7 +49,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
               className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-all-smooth hover:scale-105"
             >
               <LogOut className="w-4 h-4 transition-transform-smooth hover:translate-x-1" />
-              {user.isGuest ? 'Salir' : 'Cerrar Sesión'}
+              {t('auth.logout')}
             </button>
           </div>
         </>

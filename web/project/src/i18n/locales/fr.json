@@ -1,0 +1,67 @@
+{
+  "app": {
+    "title": "Assistant Subventions",
+    "subtitle": "Recherche intelligente d'aides publiques",
+    "description": "Recherche intelligente d'aides et subventions publiques avec analyse de documents"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "guest": "Continuer en tant qu'invité",
+    "email": "Email",
+    "password": "Mot de passe",
+    "name": "Nom",
+    "loginTitle": "Bon retour",
+    "loginSubtitle": "Accédez à votre compte pour continuer vos recherches de subventions",
+    "registerTitle": "Créer un nouveau compte",
+    "registerSubtitle": "Enregistrez votre compte pour sauvegarder et gérer vos recherches",
+    "guestTitle": "Explorer en tant qu'invité",
+    "guestSubtitle": "Commencez à explorer les subventions sans créer de compte",
+    "switchToLogin": "Vous avez déjà un compte ? Connectez-vous",
+    "switchToRegister": "Vous n'avez pas de compte ? Inscrivez-vous",
+    "logout": "Se déconnecter"
+  },
+  "sidebar": {
+    "newQuery": "Nouvelle Recherche",
+    "recentQueries": "Recherches Récentes"
+  },
+  "welcome": {
+    "startNewQuery": "Commencer une Nouvelle Recherche"
+  },
+  "chat": {
+    "searchPhase": "Recherche",
+    "documentPhase": "Documents",
+    "searchPlaceholder": "Recherchez des subventions par secteur, entreprise, localisation...",
+    "documentPlaceholder": "Posez des questions sur les documents sélectionnés...",
+    "send": "Envoyer",
+    "thinking": "Réflexion...",
+    "uploadFile": "Télécharger un fichier",
+    "downloadFile": "Télécharger",
+    "removeFile": "Supprimer",
+    "selectGrant": "Sélectionner pour analyse",
+    "selectedGrant": "Sélectionnée pour analyse"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "grants": {
+    "available": "Subventions Disponibles"
+  },
+  "files": {
+    "uploaded": "Fichiers Téléchargés"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "save": "Sauvegarder",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "settings": "Paramètres"
+  }
+}

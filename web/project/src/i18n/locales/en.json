@@ -1,0 +1,67 @@
+{
+  "app": {
+    "title": "Grants Assistant",
+    "subtitle": "Smart search for public funding",
+    "description": "Smart search for public grants and subsidies with document analysis"
+  },
+  "auth": {
+    "login": "Log In",
+    "register": "Sign Up",
+    "guest": "Continue as Guest",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Access your account to continue with your grant queries",
+    "registerTitle": "Create new account",
+    "registerSubtitle": "Register your account to save and manage your queries",
+    "guestTitle": "Explore as guest",
+    "guestSubtitle": "Start exploring grants without creating an account",
+    "switchToLogin": "Already have an account? Log in",
+    "switchToRegister": "Don't have an account? Sign up",
+    "logout": "Log Out"
+  },
+  "sidebar": {
+    "newQuery": "New Query",
+    "recentQueries": "Recent Queries"
+  },
+  "welcome": {
+    "startNewQuery": "Start New Query"
+  },
+  "chat": {
+    "searchPhase": "Search",
+    "documentPhase": "Documents",
+    "searchPlaceholder": "Search for grants by sector, company, location...",
+    "documentPlaceholder": "Ask questions about the selected documents...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "uploadFile": "Upload file",
+    "downloadFile": "Download",
+    "removeFile": "Remove",
+    "selectGrant": "Select for analysis",
+    "selectedGrant": "Selected for analysis"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "grants": {
+    "available": "Available Grants"
+  },
+  "files": {
+    "uploaded": "Uploaded Files"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "settings": "Settings"
+  }
+}

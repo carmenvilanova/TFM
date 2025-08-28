@@ -1,0 +1,67 @@
+{
+  "app": {
+    "title": "Förderassistent",
+    "subtitle": "Intelligente Suche nach öffentlichen Fördermitteln",
+    "description": "Intelligente Suche nach öffentlichen Beihilfen und Subventionen mit Dokumentenanalyse"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "guest": "Als Gast fortfahren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "name": "Name",
+    "loginTitle": "Willkommen zurück",
+    "loginSubtitle": "Melden Sie sich in Ihrem Konto an, um Ihre Förderanfragen fortzusetzen",
+    "registerTitle": "Neues Konto erstellen",
+    "registerSubtitle": "Registrieren Sie Ihr Konto, um Ihre Anfragen zu speichern und zu verwalten",
+    "guestTitle": "Als Gast erkunden",
+    "guestSubtitle": "Beginnen Sie mit der Erkundung von Fördermitteln ohne Kontoerstellung",
+    "switchToLogin": "Haben Sie bereits ein Konto? Anmelden",
+    "switchToRegister": "Haben Sie kein Konto? Registrieren",
+    "logout": "Abmelden"
+  },
+  "sidebar": {
+    "newQuery": "Neue Anfrage",
+    "recentQueries": "Kürzliche Anfragen"
+  },
+  "welcome": {
+    "startNewQuery": "Neue Anfrage starten"
+  },
+  "chat": {
+    "searchPhase": "Suche",
+    "documentPhase": "Dokumente",
+    "searchPlaceholder": "Suchen Sie nach Fördermitteln nach Sektor, Unternehmen, Standort...",
+    "documentPlaceholder": "Stellen Sie Fragen zu den ausgewählten Dokumenten...",
+    "send": "Senden",
+    "thinking": "Denken...",
+    "uploadFile": "Datei hochladen",
+    "downloadFile": "Herunterladen",
+    "removeFile": "Entfernen",
+    "selectGrant": "Für Analyse auswählen",
+    "selectedGrant": "Für Analyse ausgewählt"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "grants": {
+    "available": "Verfügbare Fördermittel"
+  },
+  "files": {
+    "uploaded": "Hochgeladene Dateien"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "retry": "Wiederholen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "settings": "Einstellungen"
+  }
+}

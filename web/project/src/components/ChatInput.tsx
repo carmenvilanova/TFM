@@ -19,15 +19,29 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [showTextRequiredError, setShowTextRequiredError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // If there are uploaded files but no text, show error
+    if (uploadedFiles.length > 0 && !message.trim()) {
+      setShowTextRequiredError(true);
+      return;
+    }
+    
     if (message.trim() && !isLoading) {
       onSendMessage(message.trim());
       setMessage('');
+      setShowTextRequiredError(false);
+      // Clear uploaded files after sending
+      setUploadedFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -152,6 +166,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
       
+      {/* Error message for missing text */}
+      {showTextRequiredError && (
+        <div className="px-4 pt-2 pb-1 animate-fade-in">
+          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+            <span className="text-sm text-red-700 font-medium">
+              El texto es obligatorio cuando se suben archivos
+            </span>
+          </div>
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="flex gap-3 p-4">
         {allowFileUpload && (
           <input
@@ -167,7 +193,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <div className="flex-1 relative">
           <textarea
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => {
+              setMessage(e.target.value);
+              // Clear error when user starts typing
+              if (showTextRequiredError) {
+                setShowTextRequiredError(false);
+              }
+            }}
             onKeyPress={handleKeyPress}
             placeholder={placeholder}
             disabled={isLoading}

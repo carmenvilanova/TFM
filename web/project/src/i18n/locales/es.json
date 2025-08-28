@@ -1,0 +1,67 @@
+{
+  "app": {
+    "title": "Asistente de Subvenciones",
+    "subtitle": "Búsqueda inteligente de ayudas públicas",
+    "description": "Búsqueda inteligente de ayudas y subvenciones públicas con análisis de documentos"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "guest": "Continuar como Invitado",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "loginTitle": "Bienvenido de vuelta",
+    "loginSubtitle": "Accede a tu cuenta para continuar con tus consultas de subvenciones",
+    "registerTitle": "Crear cuenta nueva",
+    "registerSubtitle": "Registra tu cuenta para guardar y gestionar tus consultas",
+    "guestTitle": "Explorar como invitado",
+    "guestSubtitle": "Comienza a explorar subvenciones sin necesidad de crear una cuenta",
+    "switchToLogin": "¿Ya tienes cuenta? Inicia sesión",
+    "switchToRegister": "¿No tienes cuenta? Regístrate",
+    "logout": "Cerrar Sesión"
+  },
+  "sidebar": {
+    "newQuery": "Nueva Consulta",
+    "recentQueries": "Consultas Recientes"
+  },
+  "welcome": {
+    "startNewQuery": "Comenzar Nueva Consulta"
+  },
+  "chat": {
+    "searchPhase": "Búsqueda",
+    "documentPhase": "Documentos",
+    "searchPlaceholder": "Busca subvenciones por sector, empresa, ubicación...",
+    "documentPlaceholder": "Haz preguntas sobre los documentos seleccionados...",
+    "send": "Enviar",
+    "thinking": "Pensando...",
+    "uploadFile": "Subir archivo",
+    "downloadFile": "Descargar",
+    "removeFile": "Eliminar",
+    "selectGrant": "Seleccionar para análisis",
+    "selectedGrant": "Seleccionada para análisis"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français", 
+    "de": "Deutsch"
+  },
+  "grants": {
+    "available": "Ayudas Disponibles"
+  },
+  "files": {
+    "uploaded": "Archivos Subidos"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "settings": "Configuración"
+  }
+}
