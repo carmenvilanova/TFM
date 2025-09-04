@@ -34,6 +34,9 @@ export const FileMetadata: React.FC<FileMetadataProps> = ({ file, onDownload, on
     return '📁';
   };
 
+  // PATCH: base de API hardcodeada para pruebas
+  const API_URL = 'https://tfm-docker.onrender.com';
+
   return (
     <div className="bg-white border border-amber-200 rounded-lg p-4 shadow-sm hover-lift animate-fade-in">
       <div className="flex items-start justify-between mb-3">
@@ -92,14 +95,15 @@ export const FileMetadata: React.FC<FileMetadataProps> = ({ file, onDownload, on
             const formData = new FormData();
             formData.append('file', file.file); // file.file debe ser de tipo File
 
-            const res = await fetch('http://localhost:8000/procesar_documento', {
+            const res = await fetch(`${API_URL}/procesar_documento`, {
               method: 'POST',
-              body: formData,
+              body: formData, // importante: no poner Content-Type manual
             });
             if (res.ok) {
               alert(`Documento "${file.name}" enviado y procesado. Puedes empezar a hacer preguntas a este documento.`);
             } else {
-              alert(`Error al enviar el documento "${file.name}".`);
+              const msg = await res.text().catch(() => '');
+              alert(`Error al enviar el documento "${file.name}". ${msg || ''}`);
             }
           }}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all-smooth font-medium shadow-md hover:shadow-lg hover:scale-105 active:scale-95"

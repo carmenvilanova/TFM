@@ -17,32 +17,10 @@ interface PanelChatContainerProps {
   onFileRemove: (fileId: string) => void;
 }
 
-// Mock grant data for demonstration
 const mockGrants: GrantCall[] = [
-  {
-    id: '1',
-    title: 'Programa de Ayudas para Vivienda Social',
-    description: 'Financiación para proyectos de desarrollo de vivienda asequible en comunidades desfavorecidas. Esta ayuda apoya nueva construcción y rehabilitación de viviendas existentes.',
-    deadline: '15 de marzo, 2024',
-    amount: 'Hasta 500.000€',
-    category: 'Vivienda',
-  },
-  {
-    id: '2',
-    title: 'Iniciativa de Vivienda Comunitaria',
-    description: 'Apoyo para iniciativas de vivienda comunitaria incluyendo programas para compradores primerizos y asistencia de alquiler.',
-    deadline: '30 de abril, 2024',
-    amount: 'Hasta 250.000€',
-    category: 'Vivienda',
-  },
-  {
-    id: '3',
-    title: 'Fondo de Innovación en Vivienda Sostenible',
-    description: 'Subvenciones para soluciones innovadoras de vivienda sostenible y tecnologías de construcción verde.',
-    deadline: '20 de mayo, 2024',
-    amount: 'Hasta 1.000.000€',
-    category: 'Vivienda',
-  },
+  { id: '1', title: 'Programa de Ayudas para Vivienda Social', description: '...', deadline: '15 de marzo, 2024', amount: 'Hasta 500.000€', category: 'Vivienda' },
+  { id: '2', title: 'Iniciativa de Vivienda Comunitaria', description: '...', deadline: '30 de abril, 2024', amount: 'Hasta 250.000€', category: 'Vivienda' },
+  { id: '3', title: 'Fondo de Innovación en Vivienda Sostenible', description: '...', deadline: '20 de mayo, 2024', amount: 'Hasta 1.000.000€', category: 'Vivienda' },
 ];
 
 export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
@@ -55,51 +33,60 @@ export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
   onFileRemove,
 }) => {
   const { t } = useTranslation();
-  const [activePanel, setActivePanel] = useState<'search' | 'document'>('search');
-  const [hasSubmittedWithFiles, setHasSubmittedWithFiles] = useState(false);
+
+  // Inicia el tab con la fase REAL de la sesión
+  const [activePanel, setActivePanel] = useState<'search' | 'document'>(session.phase);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [session.searchMessages, session.documentMessages, activePanel]);
 
-  const getPlaceholder = () => {
-    return activePanel === 'search' 
-      ? t('chat.searchPlaceholder')
-      : t('chat.documentPlaceholder');
-  };
+  // PATCH: sincroniza el tab cuando cambie session.phase (no depende de activePanel)
+  useEffect(() => {
+    setActivePanel(session.phase);
+  }, [session.phase]);
 
-  const getCurrentMessages = (): Message[] => {
-    return activePanel === 'search' ? session.searchMessages : session.documentMessages;
-  };
+  // PATCH: red de seguridad SOLO cuando pasamos de 0 -> >0 archivos
+  const prevUploadCount = useRef<number>(session.uploadedFiles?.length ?? 0);
+  useEffect(() => {
+    const count = session.uploadedFiles?.length ?? 0;
+    if (prevUploadCount.current === 0 && count > 0) {
+      setActivePanel('document');
+    }
+    prevUploadCount.current = count;
+  }, [session.uploadedFiles?.length]); // ← ya no depende de activePanel
 
-  const shouldShowGrantCards = activePanel === 'search' && 
-    session.searchMessages.some(msg => msg.type === 'user' && 
-      (msg.content.toLowerCase().includes('vivienda') || msg.content.toLowerCase().includes('housing')));
+  const getPlaceholder = () =>
+    activePanel === 'search' ? t('chat.searchPlaceholder') : t('chat.documentPlaceholder');
+
+  const getCurrentMessages = (): Message[] =>
+    activePanel === 'search' ? session.searchMessages : session.documentMessages;
+
+  const shouldShowGrantCards =
+    activePanel === 'search' &&
+    session.searchMessages.some(
+      msg =>
+        msg.type === 'user' &&
+        (msg.content.toLowerCase().includes('vivienda') ||
+          msg.content.toLowerCase().includes('housing'))
+    );
 
   const handleSendMessage = (message: string) => {
     onSendMessage(message, activePanel);
-    // Mark that we've submitted with files if there are files in the session
-    if (activePanel === 'document' && session.uploadedFiles && session.uploadedFiles.length > 0) {
-      setHasSubmittedWithFiles(true);
-    }
   };
 
-  // Reset submission state when switching panels
-  useEffect(() => {
-    setHasSubmittedWithFiles(false);
-  }, [activePanel]);
+  const files = session.uploadedFiles ?? [];
+  const hasUploads = files.length > 0;
 
   return (
     <div className="flex-1 flex flex-col bg-white">
-      {/* Panel Header with Tabs */}
+      {/* Header + tabs */}
       <div className="border-b border-amber-200 p-5 bg-gradient-to-r from-red-50 to-amber-50">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-800">
-            {session.title}
-          </h2>
-          
-          {/* Panel Tabs */}
+          <h2 className="text-xl font-bold text-gray-800">{session.title}</h2>
+
           <div className="flex gap-1 p-1 bg-amber-100 rounded-lg shadow-inner animate-fade-in">
             <button
               onClick={() => setActivePanel('search')}
@@ -109,7 +96,7 @@ export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
                   : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
               }`}
             >
-              <Search className="w-4 h-4 transition-transform-smooth group-hover:scale-110" />
+              <Search className="w-4 h-4" />
               {t('chat.searchPhase')}
             </button>
             <button
@@ -120,21 +107,21 @@ export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
                   : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
               }`}
             >
-              <FileText className="w-4 h-4 transition-transform-smooth group-hover:scale-110" />
+              <FileText className="w-4 h-4" />
               {t('chat.documentPhase')}
             </button>
           </div>
         </div>
       </div>
-      
-      {/* Panel Content */}
+
+      {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
-        {/* Messages for current panel */}
-        {getCurrentMessages().map((message) => (
+        {/* Mensajes del panel activo */}
+        {getCurrentMessages().map(message => (
           <ChatMessage key={message.id} message={message} />
         ))}
-        
-        {/* Grant Cards (only in search panel) */}
+
+        {/* Grant Cards (solo en búsqueda) */}
         {shouldShowGrantCards && (
           <div className="mb-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -142,46 +129,54 @@ export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
               {t('grants.available', { defaultValue: 'Ayudas Disponibles' })}
             </h3>
             <div className="grid gap-4">
-              {mockGrants.map((grant) => (
-                <GrantCard 
-                  key={grant.id} 
-                  grant={grant} 
-                  onSelect={onGrantSelect}
-                />
+              {mockGrants.map(grant => (
+                <GrantCard key={grant.id} grant={grant} onSelect={onGrantSelect} />
               ))}
             </div>
           </div>
         )}
-        
-        {/* Uploaded Files (only in document panel and after submission) */}
-        {activePanel === 'document' && session.uploadedFiles && session.uploadedFiles.length > 0 && hasSubmittedWithFiles && (
+
+        {/* Archivos subidos: visible en Documentos apenas haya archivos */}
+        {activePanel === 'document' && (
           <div className="mb-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-red-600" />
-              {t('files.uploaded', { defaultValue: 'Archivos Subidos' })} ({session.uploadedFiles.length})
+              {t('files.uploaded', { defaultValue: 'Archivos Subidos' })}
+              {hasUploads ? ` (${files.length})` : ''}
             </h3>
-            <div className="grid gap-4">
-              {session.uploadedFiles.map((file) => (
-                <FileMetadata
-                  key={file.id}
-                  file={file}
-                  onDownload={onFileDownload}
-                  onRemove={onFileRemove}
-                />
-              ))}
-            </div>
+
+            {hasUploads ? (
+              <div className="grid gap-4">
+                {files.map(file => (
+                  <FileMetadata
+                    key={file.id}
+                    file={file}
+                    onDownload={onFileDownload}
+                    onRemove={onFileRemove}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-amber-700 bg-amber-50 border border-amber-200 rounded p-3">
+                {t('files.emptyState', { defaultValue: 'Sube un documento para procesarlo.' })}
+              </div>
+            )}
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
-      
-      {/* Chat Input */}
+
+      {/* Input */}
       <ChatInput
         onSendMessage={handleSendMessage}
         isLoading={isLoading}
         placeholder={getPlaceholder()}
-        onFileUpload={onFileUpload}
+        // cambio inmediato a Documentos al subir (UX)
+        onFileUpload={(files) => {
+          onFileUpload(files);
+          setActivePanel('document');
+        }}
         allowFileUpload={activePanel === 'document'}
       />
     </div>
