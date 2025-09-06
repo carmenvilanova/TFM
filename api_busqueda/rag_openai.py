@@ -131,6 +131,7 @@ Si el usuario te pregunta si la convocatoria le puede ayudar o servir, pregunta 
 según los requisitos en el documento e invítale a revisarlos para que evalúe si se ajustan a sus necesidades. 
 
 Nunca des información que no encuentres en el documento. Si hay algo que no encuentras, debes decir al usuario que no has encontrado esa información en el documento e invitarle a que lo revise por su propia cuenta. 
+Termina siempre preguntando al usuario en tono amable si le puedes ayudar an algo más. 
     
 """
 
