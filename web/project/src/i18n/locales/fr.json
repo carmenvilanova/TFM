@@ -62,6 +62,18 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "close": "Fermer",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "selectLanguage": "Sélectionner la langue",
+    "loginError": "Erreur de connexion",
+    "registerError": "Erreur d'inscription",
+    "audioConversionError": "Erreur lors de la conversion audio en texte",
+    "documentError": "Erreur lors de la récupération des documents",
+    "sendDocumentError": "Erreur lors de l'envoi du document",
+    "documentProcessedSuccess": "Document \"{{fileName}}\" envoyé et traité. Vous pouvez commencer à poser des questions sur ce document.",
+    "defaultPlaceholder": "Demandez des subventions...",
+    "transcribedText": "Texte transcrit de l'audio",
+    "removeAll": "Supprimer tout",
+    "stopRecording": "Arrêter l'enregistrement",
+    "recordVoiceMessage": "Enregistrer un message vocal"
   }
 }

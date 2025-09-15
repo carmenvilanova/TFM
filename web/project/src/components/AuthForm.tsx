@@ -37,12 +37,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     if (mode === 'login') {
       const result = await onLogin(formData.email, formData.password);
       if (!result.success) {
-        setError(result.error || 'Error al iniciar sesión');
+        setError(result.error || t('common.loginError'));
       }
     } else if (mode === 'register') {
       const result = await onRegister(formData.name, formData.email, formData.password);
       if (!result.success) {
-        setError(result.error || 'Error al registrarse');
+        setError(result.error || t('common.registerError'));
       }
     }
   };

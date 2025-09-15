@@ -3,6 +3,7 @@ import {
   Calendar, DollarSign, ExternalLink, Download,
   Building2, FileText, Loader2, Archive
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { SearchResult } from '../types/chat';
 import { StatusBadge } from './StatusBadge';
 
@@ -13,6 +14,7 @@ interface SearchResultCardProps {
 const API_BASE = 'https://tfm-docker.onrender.com';
 
 export const SearchResultCard: React.FC<SearchResultCardProps> = ({ result }) => {
+  const { t } = useTranslation();
   // --- NUEVO: estado de disponibilidad de documentos ---
   // null = desconocido (cargando), true = hay docs, false = no hay
   const [hasDocs, setHasDocs] = useState<boolean | null>(null);
@@ -100,7 +102,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({ result }) =>
       setDocs(documentos);
       setZipUrl(data.zip ?? null);
     } catch (e: any) {
-      setErrorDocs(e.message || 'Error al obtener documentos');
+      setErrorDocs(e.message || t('common.documentError'));
       setDocs([]); setZipUrl(null);
     } finally {
       setLoadingDocs(false);

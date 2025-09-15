@@ -62,6 +62,18 @@
     "delete": "Delete",
     "edit": "Edit",
     "close": "Close",
-    "settings": "Settings"
+    "settings": "Settings",
+    "selectLanguage": "Select language",
+    "loginError": "Login error",
+    "registerError": "Registration error",
+    "audioConversionError": "Error converting audio to text",
+    "documentError": "Error retrieving documents",
+    "sendDocumentError": "Error sending document",
+    "documentProcessedSuccess": "Document \"{{fileName}}\" sent and processed. You can start asking questions about this document.",
+    "defaultPlaceholder": "Ask about grants...",
+    "transcribedText": "Transcribed text from audio",
+    "removeAll": "Remove all",
+    "stopRecording": "Stop recording",
+    "recordVoiceMessage": "Record voice message"
   }
 }

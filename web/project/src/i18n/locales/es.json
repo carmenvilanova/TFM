@@ -62,6 +62,18 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "close": "Cerrar",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "selectLanguage": "Seleccionar idioma",
+    "loginError": "Error al iniciar sesión",
+    "registerError": "Error al registrarse",
+    "audioConversionError": "Error al convertir el audio a texto",
+    "documentError": "Error al obtener documentos",
+    "sendDocumentError": "Error al enviar el documento",
+    "documentProcessedSuccess": "Documento \"{{fileName}}\" enviado y procesado. Puedes empezar a hacer preguntas a este documento.",
+    "defaultPlaceholder": "Pregunta sobre ayudas...",
+    "transcribedText": "Texto transcrito desde el audio",
+    "removeAll": "Quitar todos",
+    "stopRecording": "Detener grabación",
+    "recordVoiceMessage": "Grabar mensaje de voz"
   }
 }

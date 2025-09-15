@@ -1,5 +1,6 @@
 import React from 'react';
 import { Download, FileText, Calendar, HardDrive, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { UploadedFile } from '../types/chat';
 
 interface FileMetadataProps {
@@ -9,6 +10,7 @@ interface FileMetadataProps {
 }
 
 export const FileMetadata: React.FC<FileMetadataProps> = ({ file, onDownload, onRemove }) => {
+  const { t } = useTranslation();
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -100,10 +102,10 @@ export const FileMetadata: React.FC<FileMetadataProps> = ({ file, onDownload, on
               body: formData, // importante: no poner Content-Type manual
             });
             if (res.ok) {
-              alert(`Documento "${file.name}" enviado y procesado. Puedes empezar a hacer preguntas a este documento.`);
+              alert(t('common.documentProcessedSuccess', { fileName: file.name }));
             } else {
               const msg = await res.text().catch(() => '');
-              alert(`Error al enviar el documento "${file.name}". ${msg || ''}`);
+              alert(`${t('common.sendDocumentError')} "${file.name}". ${msg || ''}`);
             }
           }}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all-smooth font-medium shadow-md hover:shadow-lg hover:scale-105 active:scale-95"

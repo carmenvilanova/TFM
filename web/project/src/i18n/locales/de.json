@@ -62,6 +62,18 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "close": "Schließen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "selectLanguage": "Sprache auswählen",
+    "loginError": "Anmeldefehler",
+    "registerError": "Registrierungsfehler",
+    "audioConversionError": "Fehler beim Konvertieren von Audio zu Text",
+    "documentError": "Fehler beim Abrufen von Dokumenten",
+    "sendDocumentError": "Fehler beim Senden des Dokuments",
+    "documentProcessedSuccess": "Dokument \"{{fileName}}\" gesendet und verarbeitet. Sie können nun Fragen zu diesem Dokument stellen.",
+    "defaultPlaceholder": "Fragen Sie nach Fördermitteln...",
+    "transcribedText": "Transkribierter Text aus Audio",
+    "removeAll": "Alle entfernen",
+    "stopRecording": "Aufnahme stoppen",
+    "recordVoiceMessage": "Sprachnachricht aufnehmen"
   }
 }

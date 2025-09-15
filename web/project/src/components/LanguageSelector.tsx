@@ -31,7 +31,7 @@ export const LanguageSelector: React.FC = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 rounded-lg hover:bg-amber-50 transition-all-smooth shadow-sm hover:shadow-md"
-        aria-label="Select language"
+        aria-label={t('common.selectLanguage')}
       >
         <Globe className="w-4 h-4 text-gray-600" />
         <span className="text-lg">{currentLanguage.flag}</span>

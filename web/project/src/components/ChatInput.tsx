@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Send, Mic, Paperclip, MicOff, Upload, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -12,10 +13,12 @@ interface ChatInputProps {
 export const ChatInput: React.FC<ChatInputProps> = ({ 
   onSendMessage, 
   isLoading = false, 
-  placeholder = "Pregunta sobre ayudas...",
+  placeholder,
   onFileUpload,
   allowFileUpload = true
 }) => {
+  const { t } = useTranslation();
+  const defaultPlaceholder = t('common.defaultPlaceholder');
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -110,11 +113,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     try {
       // Simulamos una respuesta de la API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      const transcribedText = "Texto transcrito desde el audio"; // Reemplazar con respuesta real de la API
+      const transcribedText = t('common.transcribedText'); // Reemplazar con respuesta real de la API
       setMessage(prev => prev + (prev ? ' ' : '') + transcribedText);
     } catch (error) {
       console.error('Error converting speech to text:', error);
-      alert('Error al convertir el audio a texto');
+      alert(t('common.audioConversionError'));
     }
   };
 
@@ -139,7 +142,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 onClick={removeAllFiles}
                 className="text-xs text-red-500 hover:text-red-700 transition-colors"
               >
-                Quitar todos
+                {t('common.removeAll')}
               </button>
             )}
           </div>
@@ -201,7 +204,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               }
             }}
             onKeyPress={handleKeyPress}
-            placeholder={placeholder}
+            placeholder={placeholder || defaultPlaceholder}
             disabled={isLoading}
             className={`w-full px-4 py-3 ${allowFileUpload ? 'pr-12' : 'pr-4'} bg-amber-50 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none min-h-[52px] max-h-32 text-gray-800`}
             rows={1}
@@ -228,7 +231,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 : 'text-amber-400 hover:text-amber-600 hover:bg-amber-50'
             }`}
             disabled={isLoading}
-            title={isRecording ? "Detener grabación" : "Grabar mensaje de voz"}
+            title={isRecording ? t('common.stopRecording') : t('common.recordVoiceMessage')}
           >
             {isRecording ? <MicOff className="w-5 h-5 animate-pulse" /> : <Mic className="w-5 h-5" />}
           </button>
