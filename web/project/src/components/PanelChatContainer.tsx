@@ -3,31 +3,22 @@ import { useTranslation } from 'react-i18next';
 import { Building2, Search, FileText } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
-import { GrantCard } from './GrantCard';
 import { FileMetadata } from './FileMetadata';
-import { ChatSession, GrantCall, UploadedFile, Message } from '../types/chat';
+import { ChatSession, UploadedFile, Message } from '../types/chat';
 
 interface PanelChatContainerProps {
   session: ChatSession;
   isLoading: boolean;
   onSendMessage: (message: string, panel: 'search' | 'document') => void;
-  onGrantSelect: (grant: GrantCall) => void;
   onFileUpload: (files: File[]) => void;
   onFileDownload: (file: UploadedFile) => void;
   onFileRemove: (fileId: string) => void;
 }
 
-const mockGrants: GrantCall[] = [
-  { id: '1', title: 'Programa de Ayudas para Vivienda Social', description: '...', deadline: '15 de marzo, 2024', amount: 'Hasta 500.000€', category: 'Vivienda' },
-  { id: '2', title: 'Iniciativa de Vivienda Comunitaria', description: '...', deadline: '30 de abril, 2024', amount: 'Hasta 250.000€', category: 'Vivienda' },
-  { id: '3', title: 'Fondo de Innovación en Vivienda Sostenible', description: '...', deadline: '20 de mayo, 2024', amount: 'Hasta 1.000.000€', category: 'Vivienda' },
-];
-
 export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
   session,
   isLoading,
   onSendMessage,
-  onGrantSelect,
   onFileUpload,
   onFileDownload,
   onFileRemove,
@@ -43,12 +34,12 @@ export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [session.searchMessages, session.documentMessages, activePanel]);
 
-  // PATCH: sincroniza el tab cuando cambie session.phase (no depende de activePanel)
+  // Sincroniza el tab cuando cambie session.phase
   useEffect(() => {
     setActivePanel(session.phase);
   }, [session.phase]);
 
-  // PATCH: red de seguridad SOLO cuando pasamos de 0 -> >0 archivos
+  // Red de seguridad: si pasamos de 0 -> >0 archivos, abre Documentos
   const prevUploadCount = useRef<number>(session.uploadedFiles?.length ?? 0);
   useEffect(() => {
     const count = session.uploadedFiles?.length ?? 0;
@@ -56,22 +47,13 @@ export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
       setActivePanel('document');
     }
     prevUploadCount.current = count;
-  }, [session.uploadedFiles?.length]); // ← ya no depende de activePanel
+  }, [session.uploadedFiles?.length]);
 
   const getPlaceholder = () =>
     activePanel === 'search' ? t('chat.searchPlaceholder') : t('chat.documentPlaceholder');
 
   const getCurrentMessages = (): Message[] =>
     activePanel === 'search' ? session.searchMessages : session.documentMessages;
-
-  const shouldShowGrantCards =
-    activePanel === 'search' &&
-    session.searchMessages.some(
-      msg =>
-        msg.type === 'user' &&
-        (msg.content.toLowerCase().includes('vivienda') ||
-          msg.content.toLowerCase().includes('housing'))
-    );
 
   const handleSendMessage = (message: string) => {
     onSendMessage(message, activePanel);
@@ -120,21 +102,6 @@ export const PanelChatContainer: React.FC<PanelChatContainerProps> = ({
         {getCurrentMessages().map(message => (
           <ChatMessage key={message.id} message={message} />
         ))}
-
-        {/* Grant Cards (solo en búsqueda) */}
-        {shouldShowGrantCards && (
-          <div className="mb-6">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-red-600" />
-              {t('grants.available', { defaultValue: 'Ayudas Disponibles' })}
-            </h3>
-            <div className="grid gap-4">
-              {mockGrants.map(grant => (
-                <GrantCard key={grant.id} grant={grant} onSelect={onGrantSelect} />
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Archivos subidos: visible en Documentos apenas haya archivos */}
         {activePanel === 'document' && (
