@@ -196,7 +196,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-600">
-          <p>© 2024 Grupo TFM</p>
+          <p className="flex items-center justify-center text-xs text-gray-500 mb-2">
+            <Building2 className="w-3 h-3 text-red-600 mr-2" />
+            <span className="font-bold">{t('common.dataSource')}</span>
+          </p>
+          <p>© 2025 Grupo TFM</p>
           <p>Alex, Carmen, Camilo, Javier, Luis, Óscar</p>
         </div>
       </div>

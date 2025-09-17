@@ -74,6 +74,7 @@
     "transcribedText": "Transkribierter Text aus Audio",
     "removeAll": "Alle entfernen",
     "stopRecording": "Aufnahme stoppen",
-    "recordVoiceMessage": "Sprachnachricht aufnehmen"
+    "recordVoiceMessage": "Sprachnachricht aufnehmen",
+    "dataSource": "Daten vom Finanzministerium"
   }
 }

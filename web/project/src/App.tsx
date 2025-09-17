@@ -5,6 +5,7 @@ import { UserMenu } from './components/UserMenu';
 import { Sidebar } from './components/Sidebar';
 import { PanelChatContainer } from './components/PanelChatContainer';
 import { LanguageSelector } from './components/LanguageSelector';
+import { Footer } from './components/Footer';
 import { useChat } from './hooks/useChat';
 import { useAuth } from './hooks/useAuth';
 import { Building2, Sparkles } from 'lucide-react';
@@ -64,21 +65,24 @@ function App() {
 
   if (!currentSession) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-red-50 flex items-center justify-center animate-fade-in">
-        <div className="absolute top-4 right-4">
-          <LanguageSelector />
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-red-50 flex flex-col animate-fade-in">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="absolute top-4 right-4">
+            <LanguageSelector />
+          </div>
+          <div className="text-center animate-slide-in-left">
+            <Building2 className="w-20 h-20 text-red-600 mx-auto mb-6 animate-bounce-gentle hover:scale-110 transition-transform-smooth" />
+            <h1 className="text-3xl font-bold text-gray-800 mb-3">{t('app.title')}</h1>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">{t('app.description')}</p>
+            <button
+              onClick={createNewSession}
+              className="px-8 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all-smooth font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              {t('welcome.startNewQuery')}
+            </button>
+          </div>
         </div>
-        <div className="text-center animate-slide-in-left">
-          <Building2 className="w-20 h-20 text-red-600 mx-auto mb-6 animate-bounce-gentle hover:scale-110 transition-transform-smooth" />
-          <h1 className="text-3xl font-bold text-gray-800 mb-3">{t('app.title')}</h1>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">{t('app.description')}</p>
-          <button
-            onClick={createNewSession}
-            className="px-8 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all-smooth font-medium shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-          >
-            {t('welcome.startNewQuery')}
-          </button>
-        </div>
+        <Footer />
       </div>
     );
   }
@@ -122,6 +126,8 @@ function App() {
           onFileDownload={handleFileDownload}
           onFileRemove={handleFileRemove}
         />
+        
+        <Footer />
       </div>
     </div>
   );

@@ -74,6 +74,7 @@
     "transcribedText": "Transcribed text from audio",
     "removeAll": "Remove all",
     "stopRecording": "Stop recording",
-    "recordVoiceMessage": "Record voice message"
+    "recordVoiceMessage": "Record voice message",
+    "dataSource": "Data sourced from the Ministry of Finance"
   }
 }

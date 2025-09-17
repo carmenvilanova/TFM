@@ -74,6 +74,7 @@
     "transcribedText": "Texto transcrito desde el audio",
     "removeAll": "Quitar todos",
     "stopRecording": "Detener grabación",
-    "recordVoiceMessage": "Grabar mensaje de voz"
+    "recordVoiceMessage": "Grabar mensaje de voz",
+    "dataSource": "Datos obtenidos del Ministerio de Hacienda"
   }
 }
